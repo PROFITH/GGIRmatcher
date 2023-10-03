@@ -635,7 +635,6 @@ g.analyse.perday = function(ndays, firstmidnighti, time, nfeatures,
                 daysummary[di,fi] = sd(varnum, na.rm = TRUE) / mean(varnum, na.rm = TRUE) * 100
                 ds_names[fi] = varname; fi = fi + 1
                 # levels
-                # browser()
                 if (!is.null(params_247[["external_ilevels"]])) {
                   q52 = cut(varnum, breaks = params_247[["external_ilevels"]], right = FALSE)
                   q52 = table(q52)
