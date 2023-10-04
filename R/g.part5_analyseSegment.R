@@ -217,6 +217,26 @@ g.part5_analyseSegment = function(indexlog, timeList, levelList,
               fi = fi + 1
             }
           }
+          # AUC (x = time, y = value)
+          x = iso8601chartime2POSIX(ts$time[select], tz = params_general[["desiredtz"]])
+          x = as.numeric(x[which(!is.na(varnum))]) / 60 # we need time in minutes for AUC
+          y = varnum[!is.na(varnum)]
+          ds_names[fi] = paste0(params_general[["externalDataColname"]], wname, "_auc")
+          dsummary[si,fi] = pracma::trapz(x, y)
+          fi = fi + 1
+          # AUC restricted to 85 (x = time, y = value)
+          y = y - 85
+          y = ifelse(y < 0, 0, y)
+          ds_names[fi] = paste0(params_general[["externalDataColname"]], wname, "_auc.r85")
+          dsummary[si,fi] = pracma::trapz(x, y)
+          fi = fi + 1
+          # AUC per minute (x = time, y = value)
+          difftime = x[length(x)] - x[1]
+          if (length(difftime) == 0) difftime = 1 # this avoids error in case there is no CGM data (AUC would be = 0 in all its versions)
+          ds_names[fi] = paste0(params_general[["externalDataColname"]], wname, "_auc.r85_min")
+          dsummary[si,fi] = pracma::trapz(x, y) / difftime
+          fi = fi + 1
+          # potential new variables below
         }
       }
     }

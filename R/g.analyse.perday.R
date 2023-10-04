@@ -652,6 +652,29 @@ g.analyse.perday = function(ndays, firstmidnighti, time, nfeatures,
                   ds_names[fi:(fi + (length(q52) - 1))] = namesq52
                   fi = fi + length(q52)
                 }
+                # AUC (x = time, y = valfiue)
+                x = iso8601chartime2POSIX(vari[anwindices, "timestamp"], tz = desiredtz)
+                x = as.numeric(x[which(!is.na(varnum))]) / 60 # we need time in minutes for AUC
+                y = varnum[!is.na(varnum)]
+                varname = paste0(colnames(metashort)[mi], "_auc", anwi_nameindices[anwi_index])
+                fi = correct_fi(di, ds_names, fi, varname = varname)
+                daysummary[di,fi] = pracma::trapz(x, y)
+                ds_names[fi] = varname; fi = fi + 1
+                # AUC restricted to 85 (x = time, y = value)
+                y = y - 85
+                y = ifelse(y < 0, 0, y)
+                varname = paste0(colnames(metashort)[mi], "_auc.r85", anwi_nameindices[anwi_index])
+                fi = correct_fi(di, ds_names, fi, varname = varname)
+                daysummary[di,fi] = pracma::trapz(x, y)
+                ds_names[fi] = varname; fi = fi + 1
+                # AUC per minute (x = time, y = value)
+                difftime = x[length(x)] - x[1]
+                if (length(difftime) == 0) difftime = 1 # this avoids error in case there is no CGM data (AUC would be = 0 in all its versions)
+                varname = paste0(colnames(metashort)[mi], "_auc.r85_min", anwi_nameindices[anwi_index])
+                fi = correct_fi(di, ds_names, fi, varname = varname)
+                daysummary[di,fi] = pracma::trapz(x, y) / difftime
+                ds_names[fi] = varname; fi = fi + 1
+                # potential new variables below
               }
             }
           }

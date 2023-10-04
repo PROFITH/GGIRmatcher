@@ -15,6 +15,9 @@ g.part5_initialise_ts = function(IMP, M, params_247, params_general) {
     ts = data.frame(time = IMP$metashort[,1], ACC = IMP$metashort[,params_general[["acc.metric"]]] * scale,
                     guider = rep("unknown", nrow(IMP$metashort)))
   }
+  if (params_general[["externalDataColname"]] %in% names(IMP$metashort)) {
+    ts[, params_general[["externalDataColname"]]] = IMP$metashort[, params_general[["externalDataColname"]]]
+  }
   Nts = nrow(ts)
   # add non-wear column
   nonwear = IMP$rout[,5]
