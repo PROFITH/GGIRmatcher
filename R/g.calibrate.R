@@ -141,8 +141,8 @@ g.calibrate = function(datafile, params_rawdata = c(),
           data = P$data
         }
       } else if (dformat == FORMAT$AD_HOC_CSV) {
-        if (ncol(P$data) >= 4 && mon == MONITOR$AD_HOC) {
-          columns_to_use = params_rawdata[["rmc.col.acc"]]
+        if (length(params_rawdata[["rmc.col.time"]]) > 0 && mon == MONITOR$AD_HOC) {
+          columns_to_use = 2:4
         } else {
           columns_to_use = 1:3
         }
@@ -324,7 +324,13 @@ g.calibrate = function(datafile, params_rawdata = c(),
       nomovement = which(meta_temp[,5] < sdcriter & meta_temp[,6] < sdcriter & meta_temp[,7] < sdcriter &
                            abs(as.numeric(meta_temp[,2])) < 2 & abs(as.numeric(meta_temp[,3])) < 2 &
                            abs(as.numeric(meta_temp[,4])) < 2) #the latter three are to reduce chance of including clipping periods
-      meta_temp = meta_temp[nomovement,]
+      if (length(nomovement) < 10) {
+        # take only one row to trigger that autocalibration is skipped 
+        # with the QCmessage that there is not enough data
+        meta_temp = meta_temp[1, ] 
+      } else {
+        meta_temp = meta_temp[nomovement,]
+      }
       dup = which(rowSums(meta_temp[1:(nrow(meta_temp) - 1), 2:7] == meta_temp[2:nrow(meta_temp), 2:7]) == 3) # remove duplicated values
       if (length(dup) > 0) meta_temp = meta_temp[-dup,]
       rm(nomovement, dup)
