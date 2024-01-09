@@ -14,7 +14,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">GGIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9-5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0-1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,45 +88,40 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">g.part5.addfirstwake</span><span class="op">(</span><span class="va">ts</span>, <span class="va">summarysleep_tmp2</span>, <span class="va">nightsi</span>, <span class="va">sleeplog</span>,</span>
-<span>  <span class="va">ID</span>, <span class="va">Nepochsinhour</span>, <span class="va">Nts</span>, <span class="va">SPTE_end</span>, <span class="va">ws3new</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">g.part5.addfirstwake</span><span class="op">(</span><span class="va">ts</span>, <span class="va">summarysleep</span>, <span class="va">nightsi</span>, <span class="va">sleeplog</span>,</span>
+<span>  <span class="va">ID</span>, <span class="va">Nepochsinhour</span>, <span class="va">SPTE_end</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>ts</dt>
-<dd><p></p></dd>
+<dd><p>Data.frame object as passed on from <a href="g.part5.html">g.part5</a></p></dd>
 
-  <dt>summarysleep_tmp2</dt>
-<dd><p></p></dd>
+  <dt>summarysleep</dt>
+<dd><p>Data.frame object as passed on from <a href="g.part5.html">g.part5</a> with
+    sleep summary information from <a href="g.part4.html">g.part4</a>.</p></dd>
 
   <dt>nightsi</dt>
-<dd><p></p></dd>
+<dd><p>Vector with indices for the nights</p></dd>
 
   <dt>sleeplog</dt>
-<dd><p></p></dd>
+<dd><p>Data.frame with all sleeplog information</p></dd>
 
   <dt>ID</dt>
-<dd><p></p></dd>
+<dd><p>Participant ID</p></dd>
 
   <dt>Nepochsinhour</dt>
-<dd><p></p></dd>
-
-  <dt>Nts</dt>
-<dd><p></p></dd>
+<dd><p>Number of epochs in an hour</p></dd>
 
   <dt>SPTE_end</dt>
-<dd><p></p></dd>
-
-  <dt>ws3new</dt>
-<dd><p></p></dd>
+<dd><p>Sleep period time end index</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Data.frame ts</p>
+<p>Data.frame ts updated with first wakeup time</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

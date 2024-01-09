@@ -38,8 +38,8 @@ g.readaccfile = function(filename, blocksize, blocknumber, filequality,
     # endpage and the blocksize.
     if (blocknumber != 1 & length(PreviousEndPage) != 0) {
       # if ((mon == MONITOR$GENEACTIV && dformat == FORMAT$BIN) || dformat == FORMAT$CSV) {  # change this line as the csv data do not need to skip one more row (the skip argument in read.csv does not include this row of the dataset)
-      if (mon == MONITOR$GENEACTIV && dformat == FORMAT$BIN) {
-        # only in GENEActiv binary data and for csv format data
+      if ((mon == MONITOR$GENEACTIV && dformat == FORMAT$BIN) | dformat == FORMAT$GT3X) {
+        # only in GENEActiv binary data and for gt3x format data
         # page selection is defined from start to end (including end)
         startpage = PreviousEndPage + 1
       } else {
@@ -373,6 +373,7 @@ g.readaccfile = function(filename, blocksize, blocknumber, filequality,
                                    rmc.check4timegaps = params_rawdata[["rmc.check4timegaps"]],
                                    rmc.col.wear = params_rawdata[["rmc.col.wear"]],
                                    rmc.doresample = params_rawdata[["rmc.doresample"]],
+                                   rmc.scalefactor.acc = params_rawdata[["rmc.scalefactor.acc"]],
                                    interpolationType = params_rawdata[["interpolationType"]],
                                    PreviousLastValue = PreviousLastValue,
                                    PreviousLastTime = PreviousLastTime,

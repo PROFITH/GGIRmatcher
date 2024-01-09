@@ -87,9 +87,6 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
   params_phyact[["boutdur.mvpa"]] = sort(params_phyact[["boutdur.mvpa"]],decreasing = TRUE)
   params_phyact[["boutdur.lig"]] = sort(params_phyact[["boutdur.lig"]],decreasing = TRUE)
   params_phyact[["boutdur.in"]] = sort(params_phyact[["boutdur.in"]],decreasing = TRUE)
-  if (params_output[["save_ms5raw_format"]] != "RData" & params_output[["save_ms5raw_format"]] != "csv") {
-    params_output[["save_ms5raw_format"]] = "csv"# specify as csv if user does not clearly specify format
-  }
   #--------------------------------
   # get full file path and folder name if requested by end-user and keep this for storage in output
   if (params_output[["storefolderstructure"]] == TRUE) {
@@ -111,7 +108,7 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                         params_general = c(), ms5.out, ms5.outraw,
                         fnames.ms3, sleeplog, logs_diaries,
                         extractfilenames, referencefnames, folderstructure,
-                        fullfilenames, foldernam, verbose) {
+                        fullfilenames, foldername, ffdone, verbose) {
     tail_expansion_log =  NULL
     fnames.ms1 = dir(paste(metadatadir, "/meta/basic", sep = ""))
     fnames.ms2 = dir(paste(metadatadir, "/meta/ms2.out", sep = ""))
@@ -276,8 +273,11 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
             # Add first waking up time, if it is missing:
             ts = g.part5.addfirstwake(ts, summarysleep = summarysleep_tmp2, nightsi, sleeplog, ID,
                                       Nepochsinhour, SPTE_end)
+            # Convert time column from iso8601 to POSIX regardless of whether it is aggregated
+            # to ensure the format is consistent
+            ts$time = iso8601chartime2POSIX(ts$time,tz = params_general[["desiredtz"]])
             if (params_general[["part5_agg2_60seconds"]] == TRUE) { # Optionally aggregate to 1 minute epoch:
-              ts$time_num = floor(as.numeric(iso8601chartime2POSIX(ts$time,tz = params_general[["desiredtz"]])) / 60) * 60
+              ts$time_num = floor(as.numeric(ts$time) / 60) * 60
               
               # only include angle if angle is present
               angleColName = ifelse("angle" %in% names(ts), yes = "angle", no = NULL)
@@ -410,6 +410,7 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                   #-------------------------------
                   # ignore all nights in 'inights' before the first waking up and after the last waking up
                   FM = which(diff(ts$diur) == -1)
+                  SO = which(diff(ts$diur) == 1)
                   # now 0.5+6+0.5 midnights and 7 days
                   for (timewindowi in params_output[["timewindow"]]) {
                     nightsi = nightsi_bu
@@ -418,6 +419,11 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                       if (length(FM) > 0) {
                         # ignore first and last midnight because we did not do sleep detection on it
                         nightsi = nightsi[nightsi > FM[1] & nightsi < FM[length(FM)]]
+                      }
+                    } else if (timewindowi == "OO") {
+                      if (length(SO) > 0) {
+                        # ignore data before the first sleep onset and after the last sleep onset
+                        nightsi = nightsi[nightsi > SO[1] & nightsi < SO[length(SO)]]
                       }
                     } else {
                       # if first night is missing then nights needs to align with diur
@@ -428,8 +434,10 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                     }
                     if (timewindowi == "MM") {
                       Nwindows = length(nightsi) + 1
-                    } else {
+                    } else if (timewindowi == "WW") {
                       Nwindows = length(which(diff(ts$diur) == -1))
+                    } else if (timewindowi == "OO") {
+                      Nwindows = length(which(diff(ts$diur) == 1))
                     }
                     indjump = 1
                     qqq_backup = c()
@@ -442,7 +450,6 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                     }
                     for (wi in 1:Nwindows) { #loop through 7 windows (+1 to include the data after last awakening)
                       # Define indices of start and end of the day window (e.g. midnight-midnight, or waking-up or wakingup
-                      
                       defdays = g.part5.definedays(nightsi, wi, indjump,
                                                    nightsi_bu, epochSize = ws3new, qqq_backup, ts, 
                                                    timewindowi, Nwindows, qwindow = params_247[["qwindow"]],
@@ -541,7 +548,7 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                       di = di + 1
                     }
                   }
-                  if (params_output[["save_ms5rawlevels"]] == TRUE) {
+                  if (params_output[["save_ms5rawlevels"]] == TRUE || params_247[["part6HCA"]] == TRUE || params_247[["part6CR"]] == TRUE) {
                     legendfile = paste0(metadatadir,ms5.outraw,"/behavioralcodes",as.Date(Sys.time()),".csv")
                     if (file.exists(legendfile) == FALSE) {
                       legendtable = data.frame(class_name = Lnames, class_id = 0:(length(Lnames) - 1), stringsAsFactors = FALSE)
@@ -551,7 +558,7 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                     # I moved this bit of code to the end, because we want guider to be included (VvH April 2020)
                     rawlevels_fname =  paste0(metadatadir, ms5.outraw, "/", TRLi, "_", TRMi, "_", TRVi, "/",
                                               gsub(pattern = "[.]|rdata|csv|cwa|gt3x|bin",
-                                                   replacement = "", x = tolower(fnames.ms3[i])),
+                                                   replacement = "", x = fnames.ms3[i], ignore.case = TRUE),
                                               "_", sibDef, ".", params_output[["save_ms5raw_format"]])
                     # save time series to csv files
                     if (params_output[["do.sibreport"]] == TRUE & length(params_sleep[["nap_model"]]) > 0) {
@@ -574,7 +581,8 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                                            save_ms5raw_without_invalid = params_output[["save_ms5raw_without_invalid"]],
                                            DaCleanFile = DaCleanFile,
                                            includedaycrit.part5 = params_cleaning[["includedaycrit.part5"]], ID = ID,
-                                           sep_reports = params_output[["sep_reports"]])
+                                           sep_reports = params_output[["sep_reports"]],
+                                           params_247 = params_247)
                   }
                 }
               }
@@ -700,7 +708,7 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                                                   params_general, ms5.out, ms5.outraw,
                                                   fnames.ms3, sleeplog, logs_diaries,
                                                   extractfilenames, referencefnames, folderstructure,
-                                                  fullfilenames, foldername, verbose)
+                                                  fullfilenames, foldername, ffdone, verbose)
                                      })
                                      return(tryCatchResult)
                                    }
@@ -721,7 +729,7 @@ g.part5 = function(datadir = c(), metadatadir = c(), f0=c(), f1=c(),
                  params_general, ms5.out, ms5.outraw,
                  fnames.ms3, sleeplog, logs_diaries,
                  extractfilenames, referencefnames, folderstructure,
-                 fullfilenames, foldername, verbose)
+                 fullfilenames, foldername, ffdone, verbose)
     }
   }
 }

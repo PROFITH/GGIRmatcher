@@ -42,38 +42,91 @@ test_that("chainof5parts", {
   expect_that(I$dformc, equals(2))
   expect_equal(C$npoints, 7494, tolerance = 5)
   #-------------------------
-  # part 2 with strategy = 3
+  # part 2 with data_masking_strategy = 3
   g.part2(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1,
           idloc = 2, desiredtz = desiredtz, ndayswindow = 1,
-          strategy = 3, overwrite = TRUE, hrs.del.start = 0, hrs.del.end = 0,
-          maxdur = Ndays, includedaycrit = 0, do.parallel = do.parallel, myfun = c())
+          data_masking_strategy = 3, overwrite = TRUE, hrs.del.start = 0, hrs.del.end = 0,
+          maxdur = Ndays, includedaycrit = 0, do.parallel = do.parallel, myfun = c(),
+          verbose = FALSE)
   dirname = "output_test/meta/ms2.out/"
   rn = dir(dirname,full.names = TRUE)
   load(rn[1])
+  load("output_test/meta/basic/meta_123A_testaccfile.csv.RData")
   expect_equal(nrow(IMP$metashort), 11280)
+  expect_equal(rle(IMP$rout$r4)$lengths[1], 10)
+  expect_equal(rle(IMP$rout$r4)$lengths[3], 13)
   expect_equal(round(mean(IMP$metashort$ENMO), digits = 5), 0.00802, tolerance = 3)
   expect_equal(round(as.numeric(SUM$summary$meas_dur_def_proto_day), digits = 3), 1)
   expect_equal(SUM$summary$`N valid WEdays`, 1)
   expect_equal(SUM$summary$`N valid WKdays`, 2)
+  # check the ndayswindow included is 24 hours exactly 
+  # ndayswindow = 1 with windowsizes = c(15, 3600, 3600)
+  first_epoch_in_protocol = rle(IMP$rout$r4)$lengths[1] + 1
+  last_epoch_in_protocol = max(which(IMP$rout$r4 == 0))
+  expect_equal(last_epoch_in_protocol - first_epoch_in_protocol + 1,  24)
   
-  # part 2 with strategy = 5
+  # part 2 with data_masking_strategy = 3 and hrs.del.start = 6 and hrs.del.end = 6
   g.part2(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1,
           idloc = 2, desiredtz = desiredtz, ndayswindow = 1,
-          strategy = 5, overwrite = TRUE, hrs.del.start = 0, hrs.del.end = 0,
-          maxdur = Ndays, includedaycrit = 0, do.parallel = do.parallel, myfun = c())
+          strategy = 3, overwrite = TRUE, hrs.del.start = 6, hrs.del.end = 6,
+          maxdur = Ndays, includedaycrit = 0, do.parallel = do.parallel, myfun = c(),
+          verbose = FALSE)
   dirname = "output_test/meta/ms2.out/"
   rn = dir(dirname,full.names = TRUE)
   load(rn[1])
   expect_equal(nrow(IMP$metashort), 11280)
+  expect_equal(rle(IMP$rout$r4)$lengths[1], 16) # removed 6 hours from the ndayswindow at the beginning
+  expect_equal(rle(IMP$rout$r4)$lengths[3], 19) # removed 6 hours from the ndayswindow at the end
+  # check the ndayswindow included is 12 hours exactly (24 minus hrs.del.start/end)
+  # ndayswindow = 1 with windowsizes = c(15, 3600, 3600)
+  first_epoch_in_protocol = rle(IMP$rout$r4)$lengths[1] + 1
+  last_epoch_in_protocol = max(which(IMP$rout$r4 == 0))
+  expect_equal(last_epoch_in_protocol - first_epoch_in_protocol + 1,  12)
+  
+  # part 2 with data_masking_strategy = 5
+  g.part2(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1,
+          idloc = 2, desiredtz = desiredtz, ndayswindow = 1,
+          strategy = 5, overwrite = TRUE, hrs.del.start = 0, hrs.del.end = 0,
+          maxdur = Ndays, includedaycrit = 0, do.parallel = do.parallel, myfun = c(),
+          verbose = FALSE)
+  dirname = "output_test/meta/ms2.out/"
+  rn = dir(dirname,full.names = TRUE)
+  load(rn[1])
+  expect_equal(nrow(IMP$metashort), 11280)
+  expect_equal(rle(IMP$rout$r4)$lengths[1], 15)
+  expect_equal(rle(IMP$rout$r4)$lengths[3], 8)
   expect_equal(round(mean(IMP$metashort$ENMO), digits = 5), 0.03398, tolerance = 3)
   expect_equal(round(as.numeric(SUM$summary$meas_dur_def_proto_day), digits = 3), 1)
   expect_equal(SUM$summary$`N valid WEdays`, 1)
   expect_equal(SUM$summary$`N valid WKdays`, 2)
+  # check the ndayswindow included is 24 hours exactly
+  # ndayswindow = 1 with windowsizes = c(15, 3600, 3600)
+  first_epoch_in_protocol = rle(IMP$rout$r4)$lengths[1] + 1
+  last_epoch_in_protocol = max(which(IMP$rout$r4 == 0))
+  expect_equal(last_epoch_in_protocol - first_epoch_in_protocol + 1,  24)
   
-  # part 2 with strategy = 2 and iglevels = 1
+  # part 2 with data_masking_strategy = 5 and hrs.del.start = 6 and hrs.del.end = 6
+  g.part2(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1,
+          idloc = 2, desiredtz = desiredtz, ndayswindow = 1,
+          data_masking_strategy = 5, overwrite = TRUE, hrs.del.start = 6, hrs.del.end = 6,
+          maxdur = Ndays, includedaycrit = 0, do.parallel = do.parallel, myfun = c(),
+          verbose = FALSE)
+  dirname = "output_test/meta/ms2.out/"
+  rn = dir(dirname,full.names = TRUE)
+  load(rn[1])
+  expect_equal(nrow(IMP$metashort), 11280)
+  expect_equal(rle(IMP$rout$r4)$lengths[1], 21) # removed 6 hours from the ndayswindow at the beginning
+  expect_equal(rle(IMP$rout$r4)$lengths[3], 14) # removed 6 hours from the ndayswindow at the end
+  # check the ndayswindow included is 12 hours exactly (24 minus hrs.del.start/end)
+  # ndayswindow = 1 with windowsizes = c(15, 3600, 3600)
+  first_epoch_in_protocol = rle(IMP$rout$r4)$lengths[1] + 1
+  last_epoch_in_protocol = max(which(IMP$rout$r4 == 0))
+  expect_equal(last_epoch_in_protocol - first_epoch_in_protocol + 1,  12)
+  
+  # part 2 with data_masking_strategy = 2 and iglevels = 1
   g.part2(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1,
           idloc = 2, desiredtz = desiredtz,
-          strategy = 2,overwrite = TRUE, hrs.del.start = 0,hrs.del.end = 0,
+          data_masking_strategy = 2,overwrite = TRUE, hrs.del.start = 0,hrs.del.end = 0,
           maxdur = Ndays, includedaycrit = 0, do.imp = FALSE, epochvalues2csv = TRUE, iglevels = TRUE,
           do.parallel = do.parallel, myfun = c(), winhr = 16, MX.ig.min.dur = 14, verbose = FALSE)
   dirname = "output_test/meta/ms2.out/"
@@ -83,10 +136,13 @@ test_that("chainof5parts", {
   expect_equal(mean(IMP$metashort$ENMO), 0.029, tolerance = 3)
   expect_equal(as.numeric(SUM$summary$meas_dur_def_proto_day), 1, tolerance = 2)
   expect_equal(as.numeric(SUM$daysummary$`L16_ig_gradient_ENMO_mg_0-24hr`[1]), -1.12, tolerance = 2)
-  # part 2 with strategy = 1
+  
+  # part 2
+  
+  # part 2 with data_masking_strategy = 1
   g.part2(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1,
           idloc = 2, desiredtz = desiredtz,
-          strategy = 1,overwrite = TRUE, hrs.del.start = 0,hrs.del.end = 0,
+          data_masking_strategy = 1,overwrite = TRUE, hrs.del.start = 0,hrs.del.end = 0,
           maxdur = Ndays, includedaycrit = 0, qM5L5 = c(0.2,0.4), winhr = c(3,10),
           do.parallel = do.parallel, myfun = c(), qlevels = c(0.5, 0.9),
           cosinor = TRUE, verbose = FALSE)
@@ -143,12 +199,12 @@ test_that("chainof5parts", {
   #--------------------------------------------
   #part 5
   g.part5(datadir = fn, metadatadir = metadatadir, f0 = 1, f1 = 1, desiredtz = desiredtz,
-          strategy = 1, maxdur = Ndays, hrs.del.start = 0, hrs.del.end = 0,
+          data_masking_strategy = 1, maxdur = Ndays, hrs.del.start = 0, hrs.del.end = 0,
           loglocation = sleeplog_fn,
           overwrite = TRUE, excludefirstlast = FALSE, do.parallel = do.parallel,
           frag.metrics = "all", save_ms5rawlevels = TRUE,
           part5_agg2_60seconds = TRUE, do.sibreport = TRUE, nap_model = "hip3yr",
-          iglevels = 1)
+          iglevels = 1, timewindow = c("MM", "WW", "OO"))
   sibreport_dirname = "output_test/meta/ms5.outraw/sib.reports"
   expect_true(dir.exists(sibreport_dirname))
   expect_true(file.exists(paste0(sibreport_dirname, "/sib_report_123A_testaccfile_T5A5.csv")))
@@ -161,9 +217,11 @@ test_that("chainof5parts", {
   
   expect_true(dir.exists(dirname))
   expect_true(file.exists(rn[1]))
-  expect_that(nrow(output),equals(4))
+  expect_that(nrow(output),equals(5)) # changed because OO window is exported
   expect_that(ncol(output),equals(197))
   expect_that(round(as.numeric(output$wakeup[2]), digits = 4), equals(36))
+  expect_that(as.numeric(output$dur_day_spt_min[4]), equals(1150)) # WW window duration
+  expect_that(as.numeric(output$dur_day_spt_min[5]), equals(1680)) # OO window duration
   dirname_raw = "output_test/meta/ms5.outraw/40_100_400"
   rn2 = dir(dirname_raw,full.names = TRUE, recursive = T)
   expect_true(file.exists(rn2[1]))
@@ -187,6 +245,9 @@ test_that("chainof5parts", {
   expect_true(file.exists("output_test/results/part4_nightsummary_sleep_cleaned.csv"))
   expect_true(file.exists("output_test/results/part4_summary_sleep_cleaned.csv"))
   expect_true(file.exists("output_test/results/file summary reports/Report_123A_testaccfile.csv.pdf"))
+  expect_true(file.exists("output_test/results/part5_daysummary_MM_L40M100V400_T5A5.csv"))
+  expect_true(file.exists("output_test/results/part5_daysummary_WW_L40M100V400_T5A5.csv"))
+  expect_true(file.exists("output_test/results/part5_daysummary_OO_L40M100V400_T5A5.csv"))
   dn = "output_test"
   
   #=======================
