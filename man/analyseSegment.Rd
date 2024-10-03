@@ -8,11 +8,12 @@ analyseSegment(
   ts,
   id,
   splits,
-  addFUN,
+  FUNs,
   addCutpoints = NULL,
-  segment_names = NULL,
+  qwindow_names = NULL,
   lmv = c(30, 100, 430),
-  legend
+  window_type = "segments",
+  legend = NULL
 )
 }
 \arguments{
@@ -22,13 +23,15 @@ analyseSegment(
 
 \item{splits}{}
 
-\item{addFUN}{}
+\item{FUNs}{}
 
 \item{addCutpoints}{}
 
-\item{segment_names}{}
+\item{qwindow_names}{}
 
 \item{lmv}{}
+
+\item{window_type}{}
 
 \item{legend}{}
 }

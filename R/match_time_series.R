@@ -47,6 +47,10 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
   # GGIR
   ggir_path = list.dirs(dir(file.path(GGIR_output_dir, "meta", "ms5.outraw"),
                             full.names = T))[1]
+  legend_paths = dir(file.path(GGIR_output_dir, "meta", "ms5.outraw"),
+                       full.names = T, pattern = "*.csv")
+  legend_paths = grep("behavioralcodes", legend_paths, value = T)
+  legend = read.csv(legend_paths[length(legend_paths)])
   if (is.na(ggir_path)) {
     stop("\nPath ", file.path(GGIR_output_dir, "meta", "ms5.outraw"), 
          " does not exist, or does not contain any subfolder with GGIR exported time series.", 
@@ -147,8 +151,8 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
     if (!is.na(add_metric_name)) {
       colnames(aa)[grep("timestamp", colnames(aa), invert = T)] = add_metric_name
     }
-    gg$ggir_available = ggirav
-    aa$additional_available = addav
+    ggir_available = ggirav
+    additional_available = addav
     # Additional time stamps
     if (!GGIR::is.ISO8601(aa$timestamp[1])) stop("\nTime stamps in additional file should be in iso8601 format for now.")
     # merge
@@ -156,7 +160,7 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
     ts = ts[, c("timestamp", "timenum", 
                 grep("^time", colnames(ts), invert = T, value = T))]
     # save
-    save(ts, id, cutpoints, file = fn2save)
+    save(ts, id, legend, cutpoints, additional_available, ggir_available, file = fn2save)
     # remove files and clean memory before next iteration
     rm(gg, aa, ts)
     gc()

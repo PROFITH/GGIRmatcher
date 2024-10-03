@@ -7,11 +7,10 @@
 aggregate_per_window(
   tspath,
   outputdir,
-  addFUN = list(n = function(x) sum(!is.na(x)), mean = mean),
-  hour_splits = NULL,
-  segment_names = NULL,
-  GGIR_cutpoints = NULL,
-  class_legend = NULL,
+  GGIR_output_dir,
+  FUNs = list(n = function(x) sum(!is.na(x)), mean = mean),
+  qwindow = NULL,
+  qwindow_names = NULL,
   overwrite = FALSE,
   tz = Sys.timezone(),
   verbose = TRUE
@@ -23,21 +22,19 @@ aggregate_per_window(
 
 \item{outputdir}{}
 
-\item{addFUN}{}
+\item{GGIR_output_dir}{segments. Only integers allowed for now.}
 
-\item{hour_splits}{Numeric vector with the hours in the day for which extract}
+\item{FUNs}{}
 
-\item{segment_names}{}
+\item{qwindow}{Numeric vector with the hours in the day for which extract}
 
-\item{GGIR_cutpoints}{}
-
-\item{class_legend}{}
+\item{qwindow_names}{}
 
 \item{overwrite}{}
 
 \item{tz}{Character indicating the time zone to read the timestamps.}
 
-\item{verbose}{segments. Only integers allowed for now.}
+\item{verbose}{}
 }
 \value{
 aggregated data frame.
