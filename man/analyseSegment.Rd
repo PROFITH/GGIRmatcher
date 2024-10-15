@@ -2,42 +2,42 @@
 % Please edit documentation in R/analyseSegment.R
 \name{analyseSegment}
 \alias{analyseSegment}
-\title{Title}
+\title{Applies user-specified functions over the additional sensor output}
 \usage{
 analyseSegment(
   ts,
   id,
   splits,
   FUNs,
-  addCutpoints = NULL,
   qwindow_names = NULL,
-  lmv = c(30, 100, 430),
+  lmv = NULL,
   window_type = "segments",
   legend = NULL
 )
 }
 \arguments{
-\item{ts}{}
+\item{ts}{The matched time series from \link{match_time_series}}
 
-\item{id}{}
+\item{id}{ID to be used in the output data frames.}
 
-\item{splits}{}
+\item{splits}{Indices to separate windows of interest.}
 
-\item{FUNs}{}
+\item{FUNs}{List of functions to be applied to the additional sensor data.}
 
-\item{addCutpoints}{}
+\item{qwindow_names}{Character vector with names to be assigned to the segments of the day.}
 
-\item{qwindow_names}{}
+\item{lmv}{Thresholds for light, moderate, and vigorous intensity from GGIR.}
 
-\item{lmv}{}
+\item{window_type}{Time window of interest for the aggregates ("MM", "WW", "OO", or "segments").}
 
-\item{window_type}{}
-
-\item{legend}{}
+\item{legend}{GGIR legend for class_id in the part5 time series output.}
 }
 \value{
 aggregated data frame.
 }
 \description{
-Title
+Applies the user-specified functions over the time series output of the
+additional sensor in the pre-specified windows of interest (i.e.,
+midnight to midnight, waking-up to waking-up, sleep onset to sleep onset,
+and segments of the day).
 }

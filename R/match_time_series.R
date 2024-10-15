@@ -31,6 +31,7 @@
 #' @export
 #' 
 #' @importFrom GGIR POSIXtime2iso8601 is.ISO8601
+#' @importFrom data.table fread
 #'
 match_time_series = function(GGIR_output_dir, additional_ts_dir,
                              outputdir, add_metric_name = NA,
@@ -38,11 +39,8 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
                              overwrite = F,
                              verbose = T) {
   # create output directory
-  suppressWarnings(
-    dir.create(file.path(outputdir, "GGIRmatcher", "timeseries"),
-               recursive = T)
-  )
-  
+  dir2save = file.path(outputdir, "GGIRmatcher", "meta", "ms5.outraw")
+  suppressWarnings(dir.create(dir2save, recursive = T))
   # IDENTIFY DIRECTORIES ----------------------------------------------------
   # GGIR
   ggir_path = list.dirs(dir(file.path(GGIR_output_dir, "meta", "ms5.outraw"),
@@ -50,7 +48,7 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
   legend_paths = dir(file.path(GGIR_output_dir, "meta", "ms5.outraw"),
                        full.names = T, pattern = "*.csv")
   legend_paths = grep("behavioralcodes", legend_paths, value = T)
-  legend = read.csv(legend_paths[length(legend_paths)])
+  legend = data.table::fread(legend_paths[length(legend_paths)], data.table = F)
   if (is.na(ggir_path)) {
     stop("\nPath ", file.path(GGIR_output_dir, "meta", "ms5.outraw"), 
          " does not exist, or does not contain any subfolder with GGIR exported time series.", 
@@ -106,7 +104,7 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
   # load files
   for (fi in 1:length(all_ids)) {
     id = all_ids[fi]
-    fn2save = file.path(outputdir, "GGIRmatcher", "timeseries", paste0(id, ".RData"))
+    fn2save = file.path(dir2save, paste0(id, ".RData"))
     if (file.exists(fn2save) & overwrite == FALSE) next
     if (verbose) cat(paste0(fi, "-", id, " "))
     ggirav = CR[which(CR$ID == id), "ggir_available"]
@@ -119,10 +117,10 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
       f2load = file.path(additional_ts_dir, add_fnames[which(add_ids == id)])
       aa = loadRData(f2load)
       # impute timestamps
-      t0 = GGIR::iso8601chartime2POSIX(aa$timestamp[1], tz = tz)
-      t1 = GGIR::iso8601chartime2POSIX(aa$timestamp[nrow(aa)], tz = tz)
+      t0 = strptime(aa$timestamp[1], format = "%Y-%m-%dT%H:%M:%S%z", tz = tz) 
+      t1 = strptime(aa$timestamp[nrow(aa)], format = "%Y-%m-%dT%H:%M:%S%z", tz = tz)
       time = seq.POSIXt(t0, t1, by = epoch)
-      aa2 = data.frame(timestamp = GGIR::POSIXtime2iso8601(time, tz = tz))
+      aa2 = data.frame(timestamp = format(time, format = "%Y-%m-%dT%H:%M:%S%z"))
       aa = merge(aa2, aa, by = "timestamp", all = T)
     } 
     # if not available....
@@ -134,14 +132,15 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
                       class_id = NA, invalid_fullwindow = NA, 
                       invalid_sleepperiod = NA,
                       invalid_wakinghours = NA, 
-                      timenum = as.numeric(GGIR::iso8601chartime2POSIX(aa$timestamp, tz = tz)))
+                      timenum = NA)
     }
     # GGIR time stamps
     if (!"timestamp" %in% colnames(gg)) {
       gg$timestamp = as.POSIXct(gg$timenum, tz = tz)
+      gg$timestamp =  format(gg$timestamp, format = "%Y-%m-%dT%H:%M:%S%z")
     }
-    if (!GGIR::is.ISO8601(gg$timestamp[1])) {
-      gg$timestamp = GGIR::POSIXtime2iso8601(gg$timestamp, tz = tz)
+    if ("POSIXt" %in% class(gg$timestamp)) {
+      gg$timestamp =  format(gg$timestamp, format = "%Y-%m-%dT%H:%M:%S%z")
     }
     # additional metric
     if (addav == 0) {
@@ -156,9 +155,14 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
     # Additional time stamps
     if (!GGIR::is.ISO8601(aa$timestamp[1])) stop("\nTime stamps in additional file should be in iso8601 format for now.")
     # merge
-    ts = merge(aa, gg, by = "timestamp", all.x = F, all.y = T)
+    ts = merge(aa, gg, by = "timestamp", all.x = T, all.y = T)
     ts = ts[, c("timestamp", "timenum", 
                 grep("^time", colnames(ts), invert = T, value = T))]
+    if (any(is.na(ts$timenum))) {
+      ts$invalidepoch[which(is.na(ts$timenum))] = 1 # invalid acc epoch as no available
+      ts$timenum = as.numeric(strptime(ts$timestamp, format = "%Y-%m-%dT%H:%M:%S%z", tz = tz))
+    }
+    ts = ts[order(ts$timenum), ]
     # save
     save(ts, id, legend, cutpoints, additional_available, ggir_available, file = fn2save)
     # remove files and clean memory before next iteration

@@ -16,8 +16,9 @@
 #' 
 loadRData = function(fileName){
   #loads an RData file, and returns it
+  mdat = NULL
   load(fileName)
-  if (exists("mdat")) {
+  if (!is.null("mdat")) {
     ts = mdat
     rm(mdat)
     gc()

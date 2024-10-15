@@ -1,3 +1,3 @@
-# GGIRmatcher (development version)
+# GGIRmatcher (version 0.0.9000)
 
-* Initial CRAN submission.
+* Initial version in CRAN.

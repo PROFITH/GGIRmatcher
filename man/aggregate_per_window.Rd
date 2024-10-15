@@ -20,21 +20,21 @@ aggregate_per_window(
 \item{tspath}{path to RData files containing the matched time series as done with
 \code{match_time_series}}
 
-\item{outputdir}{}
+\item{outputdir}{Pathname to the directory where the output of GGIRmatcher should be stored.}
 
-\item{GGIR_output_dir}{segments. Only integers allowed for now.}
+\item{GGIR_output_dir}{Output directory containing the GGIR output (folder named as "output_\link{...}")}
 
-\item{FUNs}{}
+\item{FUNs}{List of functions to be applied to the additional sensor data.}
 
-\item{qwindow}{Numeric vector with the hours in the day for which extract}
+\item{qwindow}{Same as in GGIR, but it only supports integer vector for now.}
 
-\item{qwindow_names}{}
+\item{qwindow_names}{Character vector with names to apply to the qwindows.}
 
-\item{overwrite}{}
+\item{overwrite}{Logical indicating whether to overwrite previously-derived output.}
 
 \item{tz}{Character indicating the time zone to read the timestamps.}
 
-\item{verbose}{}
+\item{verbose}{Logical indicating whether to print progress messages in the console.}
 }
 \value{
 aggregated data frame.
@@ -42,5 +42,5 @@ aggregated data frame.
 \description{
 Aggregates time series per window of interest, including midnight-to-midnight,
 wakingup-to-wakingup, sleeponset-to-sleeponset, and user-defined segments
-based on parameter \code{hour_splits}.
+based on parameter \code{qwindow}.
 }
