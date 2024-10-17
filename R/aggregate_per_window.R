@@ -1,4 +1,5 @@
 #' Aggregates Time Series Per Window
+#' `r lifecycle::badge("experimental")`
 #' 
 #' @description
 #' Aggregates time series per window of interest, including midnight-to-midnight,
@@ -18,7 +19,6 @@
 #' @return aggregated data frame.
 #' @export
 #' @import plyr
-#' `r lifecycle::badge("experimental")`
 #'
 aggregate_per_window = function(tspath, outputdir, GGIR_output_dir,
                                 FUNs = list(n = function(x) sum(!is.na(x)),

@@ -2,7 +2,8 @@
 % Please edit documentation in R/loadRData.R
 \name{loadRData}
 \alias{loadRData}
-\title{Loads RData File with Assigned Name}
+\title{Loads RData File with Assigned Name
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 loadRData(fileName)
 }
@@ -21,5 +22,4 @@ the loaded object.
 x = load("myfile.RData")
 exists("x")
 }
-
 }

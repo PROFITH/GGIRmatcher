@@ -2,7 +2,8 @@
 % Please edit documentation in R/getvaliddaysindices.R
 \name{getValidDayIndices}
 \alias{getValidDayIndices}
-\title{Get Indices for Valid Windows}
+\title{Get Indices for Valid Windows
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 getValidDayIndices(
   x,

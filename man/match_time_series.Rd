@@ -2,7 +2,8 @@
 % Please edit documentation in R/match_time_series.R
 \name{match_time_series}
 \alias{match_time_series}
-\title{Matches GGIR Time Series with Other Additional Time Series}
+\title{Matches GGIR Time Series with Other Additional Time Series
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 match_time_series(
   GGIR_output_dir,

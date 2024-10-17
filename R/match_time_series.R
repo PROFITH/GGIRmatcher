@@ -1,6 +1,7 @@
 #' Matches GGIR Time Series with Other Additional Time Series
+#' `r lifecycle::badge("experimental")`
 #' 
-#' @description
+#' @description  
 #' Matches the GGIR exported time series in part 5 with other additional
 #' user-provided time series at second level. 
 #' 
@@ -33,7 +34,6 @@
 #' @importFrom GGIR POSIXtime2iso8601 is.ISO8601
 #' @importFrom data.table fread
 #'
-#' `r lifecycle::badge("experimental")`
 match_time_series = function(GGIR_output_dir, additional_ts_dir,
                              outputdir, add_metric_name = NA,
                              idloc = "_", tz = Sys.timezone(),

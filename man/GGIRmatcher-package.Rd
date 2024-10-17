@@ -14,6 +14,9 @@ GGIRmatcher aims to match time series GGIR part 5 output with time series extrac
 Other contributors:
 \itemize{
   \item PROFITH research group [funder]
+  \item Spanish Ministry of Culture and Sport [funder]
+  \item Consejo Superior de Deportes (EXP_77437) [funder]
+  \item University of Granada [funder]
 }
 
 }

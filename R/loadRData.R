@@ -1,4 +1,6 @@
 #' Loads RData File with Assigned Name
+#' `r lifecycle::badge("experimental")`
+#' 
 #' @description
 #' Loads RData file with single object and assigns the user-defined name to 
 #' the loaded object. 
@@ -13,7 +15,6 @@
 #' x = load("myfile.RData")
 #' exists("x")
 #' }
-#' `r lifecycle::badge("experimental")`
 loadRData = function(fileName){
   #loads an RData file, and returns it
   mdat = NULL

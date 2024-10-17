@@ -1,4 +1,5 @@
 #' Applies user-specified functions over the additional sensor output
+#' `r lifecycle::badge("experimental")`
 #' 
 #' @description
 #' Applies the user-specified functions over the time series output of the 
@@ -20,7 +21,6 @@
 #' @import plyr
 #' @importFrom methods formalArgs
 #' @import stats
-#' `r lifecycle::badge("experimental")`
 analyseSegment = function(ts, id, splits, FUNs,
                           qwindow_names = NULL,
                           lmv = NULL,
