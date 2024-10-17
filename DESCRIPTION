@@ -5,9 +5,15 @@ Authors@R:
     c(person("Jairo", "H. Migueles", , "jairo@jhmigueles.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-0366-6935")),
     person("PROFITH research group", role = c("fnd")))
-Description: GGIRmatcher was developed to match time series GGIR part 5 output with time series extracted from an additional sensor at epoch level.
+Maintainer: Jairo H Migueles <jairo@jhmigueles.com>
+Description: GGIRmatcher aims to match time series GGIR part 5 output with time series extracted from an additional sensor.
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Depends: GGIR, data.table, plyr, methods, stats
+Depends: methods, stats, R (>= 3.5)
+Imports: GGIR, data.table, plyr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
