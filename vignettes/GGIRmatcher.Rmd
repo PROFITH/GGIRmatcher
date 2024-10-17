@@ -28,19 +28,11 @@ library(GGIRmatcher)
 
 # Pre-requisites
 
-Using GGIRmatcher require that you have previously run GGIR over your
-accelerometer data, and additionally that you have cleaned and stored
-your additional sensor data as RData files.
+Using GGIRmatcher require that you have previously run GGIR over your accelerometer data, and additionally that you have cleaned and stored your additional sensor data as RData files.
 
-As additional sensors might have different cleaning necessities, this is
-a step that each user should approach based on their needs and
-requirements. The RData files from the additional sensor are expected to
-contain a two-column data frame, including: timestamp and the output of
-interest.
+As additional sensors might have different cleaning necessities, this is a step that each user should approach based on their needs and requirements. The RData files from the additional sensor are expected to contain a two-column data frame, including: timestamp and the output of interest.
 
-Also, it is important that the RData files do only contain this data
-frame, with no additional objects. This package includes an example raw
-output file from a
+Also, it is important that the RData files do only contain this data frame, with no additional objects. This package includes an example raw output file from a
 
 ```{r echo=FALSE}
 
@@ -125,5 +117,4 @@ results folder
 
     -   full window-level report (MM, WW, OO, Segments)
 
--   variableDictionary (user is responsible for filling up the
-    additional sensor output descriptions)
+-   variableDictionary (user is responsible for filling up the additional sensor output descriptions)

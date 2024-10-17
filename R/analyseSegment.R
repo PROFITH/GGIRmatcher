@@ -58,14 +58,14 @@ analyseSegment = function(ts, id, splits, FUNs,
       column = which(colnames(tmp) == expected_levels[ci])
       if (length(column) == 0 || length(column) > 0 && is.na(column)) doFakeLevel = T
       if (doFakeLevel == FALSE) {
-        if (class(tmp[,1]) == "list") {
+        if ("list" %in% class(tmp[,1])) {
           thislevel = do.call(rbind, tmp[,column])
         } else {
           thislevel = matrix(tmp[,column], ncol = 1)
           rownames(thislevel) = rownames(tmp)
         }
       } else {
-        if (class(tmp[,1]) == "list") {
+        if ("list" %in% class(tmp[,1])) {
           thislevel = do.call(rbind, tmp[,1])
           thislevel[which(!is.na(thislevel))] = NA
         } else {
@@ -80,7 +80,7 @@ analyseSegment = function(ts, id, splits, FUNs,
       M = withCallingHandlers({
         merge(M, thislevel, by = "row.names", all = T, no.dups = F)
       }, warning = function(w) {
-        if (grepl(pattern = "‘Row.names’", x = conditionMessage(w))) {
+        if (grepl(pattern = "Row.names", x = conditionMessage(w))) {
           invokeRestart("muffleWarning")
         }
       })
