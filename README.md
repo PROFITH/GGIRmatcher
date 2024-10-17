@@ -1,7 +1,7 @@
 # GGIRmatcher
 
 <!-- badges: start -->
-
+[![R-CMD-check](https://github.com/PhysicalActivityOpenTools/GGIRmatcher/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PhysicalActivityOpenTools/GGIRmatcher/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of GGIRmatcher is to match time series GGIR part 5 output with

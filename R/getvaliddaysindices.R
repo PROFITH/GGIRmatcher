@@ -1,4 +1,5 @@
 #' Get Indices for Valid Windows
+#' `r lifecycle::badge("experimental")`
 #' 
 #' @description
 #' From the window-level full dataset, it extracts the indices (rows) for the 

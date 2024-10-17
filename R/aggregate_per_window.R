@@ -1,4 +1,5 @@
 #' Aggregates Time Series Per Window
+#' `r lifecycle::badge("experimental")`
 #' 
 #' @description
 #' Aggregates time series per window of interest, including midnight-to-midnight,

@@ -2,7 +2,8 @@
 % Please edit documentation in R/fix_window_number.R
 \name{fix_window_number}
 \alias{fix_window_number}
-\title{Make window number consistent between GGIR output and GGIRmatcher output}
+\title{Make window number consistent between GGIR output and GGIRmatcher output
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 fix_window_number(WS, ggir_output, ts = NULL)
 }

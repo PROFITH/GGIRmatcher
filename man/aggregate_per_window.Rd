@@ -2,7 +2,8 @@
 % Please edit documentation in R/aggregate_per_window.R
 \name{aggregate_per_window}
 \alias{aggregate_per_window}
-\title{Aggregates Time Series Per Window}
+\title{Aggregates Time Series Per Window
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 aggregate_per_window(
   tspath,

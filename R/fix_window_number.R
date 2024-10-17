@@ -1,4 +1,5 @@
 #' Make window number consistent between GGIR output and GGIRmatcher output
+#' `r lifecycle::badge("experimental")`
 #' 
 #' @description
 #' Fix window numbers to make them consistent between GGIR output and 

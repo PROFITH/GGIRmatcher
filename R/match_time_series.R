@@ -1,6 +1,7 @@
 #' Matches GGIR Time Series with Other Additional Time Series
+#' `r lifecycle::badge("experimental")`
 #' 
-#' @description
+#' @description  
 #' Matches the GGIR exported time series in part 5 with other additional
 #' user-provided time series at second level. 
 #' 

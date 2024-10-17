@@ -1,4 +1,5 @@
 #' Combines Window-Level Output
+#' `r lifecycle::badge("experimental")`
 #' 
 #' @description
 #' Takes the window-level output stored in the meta/ms5.out folder and combines
@@ -24,6 +25,7 @@
 #' @param minimum_WW_OO_length Minimum window length required to consider a valid window in hours for the WW and the OO window types.
 #' @param minimum_segments_length Minimum window length required to consider a valid window for the segments of the day in hours.
 #' @param verbose Logical indicating whether to print progress messages in the console.
+#'
 #'
 #' @return does not return anything. It stores reports in the results folder.
 #' @export

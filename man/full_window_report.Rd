@@ -2,7 +2,8 @@
 % Please edit documentation in R/full_window_report.R
 \name{full_window_report}
 \alias{full_window_report}
-\title{Combines Window-Level Output}
+\title{Combines Window-Level Output
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 full_window_report(
   outputdir,
