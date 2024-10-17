@@ -36,88 +36,61 @@ analyseSegment = function(ts, id, splits, FUNs,
   if (all(is.na(ts[, an]))) return(NULL)
   # internal functions
   mincounter = function(x, epoch) sum(x) * epoch/60
-  agg_per_levels = function(ws, x, windows, levels, FUN,
+  agg_per_levels = function(ws, x, time, windows, levels, FUN,
                             expected_levels = unique(levels),
                             levels_names = unique(levels),
-                            preffix = "", suffix = "", ...) {
-    otherinput = list(...)
-    # # base package option - to investigate
-    # x = tapply(data, list(data$windows, data$levels), function(x) pracma::trapz(x[,"time"], x[,"GLUC"]))
-    # # identify windows/levels of interest
-    # del = table(data$windows, data$levels)
-    # x[which(del == 0)]  = NA
-    # data.frame(windows = rep(rownames(x), times = table(rownames(x))), 
-    #            levels = rep(colnames(x), times = table(colnames(x))),
-    #            x = x[!is.na(x)])
+                            preffix = "", ...) {
     exp_params = methods::formalArgs(FUN)
-    if (length(exp_params) > 1) {
-      windows_bu = windows
-      if (!is.numeric(windows)) {
-        windows = rep(1:length(unique(windows)), times = table(windows))
-      }
-      dat = as.data.frame(cbind(x, do.call(cbind, otherinput), windows, levels))
-      colnames(dat) = c(exp_params, "windows", "levels")
-      # dat[,-ncol(dat)] = apply(dat[,-ncol(dat)], MARGIN = 2, FUN = as.numeric)
-      FF <<- FUN
-      M = plyr::ddply(dat, .(windows, levels), summarise, x = FF(x, time))
-      windows = windows_bu
-      if (any(is.na(M[, c("windows", "levels")]))) {
-        rows2del = unique(which(is.na(M$windows) | is.na(M$levels)))
-        M = M[-rows2del,]
-      }
+    if (any(grepl("time|df", exp_params, ignore.case = T))) {
+      df = data.frame(time, windows, levels, x)
+      df = df[complete.cases(df),]
+      if (nrow(df) == 0) return(ws)
+      tmp = tapply(df, list(df$windows, df$levels), FUN)
     } else {
-      M = tryCatch(expr = stats::aggregate(x ~ windows + levels, FUN = FUN, na.action = stats::na.pass),
-                   error = function(cond) {
-                     if (all(is.na(x))) { 
-                       # error from user-defined function not being able to handle 
-                       # a vector of only NA values. Other types of error would not be prevented.
-                       x = rep(0, length(windows))
-                       M = stats::aggregate(x ~ windows + levels, FUN = FUN, na.action = stats::na.pass)
-                       M = as.data.frame(M)
-                       M[,3][!is.na(M[,3])] = NA
-                       return(M)
-                     }
-                   })
+      tmp = tapply(x, list(windows, levels), FUN)
     }
-    # if matrix output, need to convert to data frame to avoid later problems when matching with GGIR
-    outputnames = ""
-    if (is.matrix(M[,ncol(M)])) {
-      outputnames = paste0("_", colnames(M[,ncol(M)]))
-      split1 = M[,1:2]; split2 = as.data.frame(M[,3])
-      M = as.data.frame(cbind(split1, split2))
-    }
-    # add missing expected levels
-    if (length(expected_levels) > length(unique(M$levels))) {
-      levels2add = expected_levels[which(!expected_levels %in% M$levels)]
-      ref = M$levels[which(M$levels %in% expected_levels)[1]]
-      m2add = M[which(M$levels == ref),]
-      m2add[,3:ncol(m2add)][!is.na(m2add[,3:ncol(m2add)])] = NA
-      m2add[,"levels"] = levels2add[1]
-      m2addbu = m2add
-      if (length(levels2add) > 1) {
-        for (lvi in 2:length(levels2add)) {
-          m2addnew = m2addbu
-          m2addnew[, "levels"] = levels2add[lvi]
-          m2add = rbind(m2add, m2addnew)
+    # if output from user function is a matrix, then we need to unlist the window-level output
+    M = matrix(NA, nrow = nrow(ws), ncol = 0)
+    rownames(M) = rownames(ws)
+    # here we make sure that all expected levels get in the matrix
+    for (ci in 1:length(expected_levels)) {
+      doFakeLevel = FALSE
+      column = which(colnames(tmp) == expected_levels[ci])
+      if (length(column) == 0 || length(column) > 0 && is.na(column)) doFakeLevel = T
+      if (doFakeLevel == FALSE) {
+        if (class(tmp[,1]) == "list") {
+          thislevel = do.call(rbind, tmp[,column])
+        } else {
+          thislevel = matrix(tmp[,column], ncol = 1)
+          rownames(thislevel) = rownames(tmp)
+        }
+      } else {
+        if (class(tmp[,1]) == "list") {
+          thislevel = do.call(rbind, tmp[,1])
+          thislevel[which(!is.na(thislevel))] = NA
+        } else {
+          thislevel =  matrix(NA, nrow = nrow(tmp), ncol = 1)
+          rownames(thislevel) = rownames(tmp)
         }
       }
-      M = rbind(M, m2add)
+      cnames = paste0(preffix, levels_names[ci])
+      if (any(!is.null(colnames(thislevel)))) cnames = paste0(cnames, "_", colnames(thislevel))
+      colnames(thislevel) = cnames
+      # merge with M, avoiding warning on duplicated column name (it is expected)
+      M = withCallingHandlers({
+        merge(M, thislevel, by = "row.names", all = T, no.dups = F)
+      }, warning = function(w) {
+        if (grepl(pattern = "‘Row.names’", x = conditionMessage(w))) {
+          invokeRestart("muffleWarning")
+        }
+      })
+      rownames(M) = M[,1]
     }
-    colnames(M) = gsub("windows", "window_number", colnames(M))
-    if (length(unique(M$levels)) > 1) {
-      M = stats::reshape(M, direction = "wide", idvar = "window_number", timevar = "levels")
-      colnames(M) = gsub("^x.", "", colnames(M))
-    } else {
-      M = M[,-2]
-    }
-    # order
-    M = M[order(M[, "window_number"]), ]
     # fix colnames
-    if (suffix != "") suffix = paste0("_suffix")
-    colnames(M) = c("window_number", 
-                    paste0(preffix, rep(levels_names, each = length(outputnames)), 
-                           outputnames, suffix))
+    if (any(duplicated(colnames(M)))) M = M[,-which(duplicated(colnames(M)))]
+    colnames(M) = gsub("Row.names", "window_number", colnames(M))
     ws = merge(ws, M, by = "window_number", all.x = T)
+    # ws = ws[order(as.numeric(ws[, "window_number"])), ]
     return(ws)
   }
   # identify epoch

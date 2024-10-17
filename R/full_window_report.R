@@ -27,8 +27,9 @@
 #'
 #' @return does not return anything. It stores reports in the results folder.
 #' @export
-#' @importFrom GGIR extract_params
 #' @import data.table
+#' @importFrom GGIR extract_params
+#' @importFrom plyr rbind.fill
 full_window_report = function(outputdir, GGIR_output_dir = NULL,
                               includecrit_day_spt = NULL,
                               includecrit_day = NULL,
@@ -44,8 +45,7 @@ full_window_report = function(outputdir, GGIR_output_dir = NULL,
   #    - Allow to specify criteria for full window, day hours, and spt hours
   #    - Allow for definition of minimum WW and OO length
   #    - Extract indices for GGIR output and for Additional output
-  #    - Only extracts full window-level report, clean and person summary  
-  #    are calculated in get_clean_report
+  #    - Only extracts full window-level report, including indices for valid windows
   # -------------------------------------------------------------------------
   input = list(...)
   # create output directory
@@ -120,7 +120,7 @@ full_window_report = function(outputdir, GGIR_output_dir = NULL,
     }
   }
   # Rbind all files
-  outputfinal = do.call(rbind, lapply(fnames[f0:f1], myfun, expectedCols))
+  outputfinal = do.call(plyr::rbind.fill, lapply(fnames[f0:f1], myfun, expectedCols))
   outputfinal = as.data.frame(outputfinal, stringsAsFactors = FALSE)
   # Find columns filled with missing values
   cut = which(sapply(outputfinal, function(x) all(x == "")) == TRUE)
