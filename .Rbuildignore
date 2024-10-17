@@ -16,3 +16,4 @@ RELEASE_CYCLE.md
 .chapterInProgress.Rmd
 codecov.yml
 ^LICENSE\.md$
+^\.github$
