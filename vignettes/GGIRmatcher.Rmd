@@ -1,11 +1,18 @@
+```{r}
+
+```
+
 ---
 title: "How to use GGIRmatcher"
 author: "Jairo H Migueles"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{How to use GGIRmatcher}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -19,24 +26,29 @@ knitr::opts_chunk$set(
 library(GGIRmatcher)
 ```
 
-## Using GGIR matcher
-
-### Pre-requisites
+# Pre-requisites
 
 Using GGIRmatcher require that you have previously run GGIR over your
-accelerometer data, and additionally that you have cleaned and store
+accelerometer data, and additionally that you have cleaned and stored
 your additional sensor data as RData files.
 
 As additional sensors might have different cleaning necessities, this is
 a step that each user should approach based on their needs and
-requirements.
+requirements. The RData files from the additional sensor are expected to
+contain a two-column data frame, including: timestamp and the output of
+interest.
 
-The RData files from the additional sensor are expected to contain a
-two-column data frame, including: timestamp and the output of interest.
+Also, it is important that the RData files do only contain this data
+frame, with no additional objects. This package includes an example raw
+output file from a
 
-### Step-by-step into GGIRmatcher
+```{r echo=FALSE}
 
-#### 1- Match time series at epoch level
+```
+
+# How to match the data
+
+## 1- Match time series at epoch level
 
 ``` r
 library(GGIRmatcher) 
@@ -51,7 +63,7 @@ match_time_series(
   verbose = T)
 ```
 
-#### 2- Aggregate per window
+## 2- Aggregate per window
 
 1.  Define functions to apply to the additional sensor data:
 
@@ -81,7 +93,7 @@ aggregate_per_window(
   verbose = TRUE)
 ```
 
-#### 3- Extract full window-level report
+## 3- Extract full window-level report
 
 ``` r
 full_window_report(
@@ -97,7 +109,7 @@ full_window_report(
   ...)
 ```
 
-## The output of GGIRmatcher
+# The output of GGIRmatcher
 
 It mimics GGIR output folder structure
 
