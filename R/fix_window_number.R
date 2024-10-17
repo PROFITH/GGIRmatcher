@@ -13,6 +13,7 @@
 #'
 #' @return Merged output with GGIR and GGIRmatcher window-level estimates.
 #' @export
+#' `r lifecycle::badge("experimental")`
 #' 
 fix_window_number = function(WS, ggir_output, ts = NULL) {
   # if there is no GGIR or GGIRmatcher output, then only dummy output

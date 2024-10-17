@@ -1,9 +1,7 @@
 # GGIRmatcher
 
 <!-- badges: start -->
-`r lifecycle::badge('experimental')`
-`r lifecycle::badge('superseded')`
-`r lifecycle::badge('deprecated')`
+
 <!-- badges: end -->
 
 The goal of GGIRmatcher is to match time series GGIR part 5 output with

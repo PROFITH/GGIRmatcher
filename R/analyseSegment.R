@@ -20,6 +20,7 @@
 #' @import plyr
 #' @importFrom methods formalArgs
 #' @import stats
+#' `r lifecycle::badge("experimental")`
 analyseSegment = function(ts, id, splits, FUNs,
                           qwindow_names = NULL,
                           lmv = NULL,

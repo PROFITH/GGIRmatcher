@@ -30,6 +30,7 @@
 #' @import data.table
 #' @importFrom GGIR extract_params
 #' @importFrom plyr rbind.fill
+#' `r lifecycle::badge("experimental")`
 full_window_report = function(outputdir, GGIR_output_dir = NULL,
                               includecrit_day_spt = NULL,
                               includecrit_day = NULL,

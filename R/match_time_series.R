@@ -33,6 +33,7 @@
 #' @importFrom GGIR POSIXtime2iso8601 is.ISO8601
 #' @importFrom data.table fread
 #'
+#' `r lifecycle::badge("experimental")`
 match_time_series = function(GGIR_output_dir, additional_ts_dir,
                              outputdir, add_metric_name = NA,
                              idloc = "_", tz = Sys.timezone(),

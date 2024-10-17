@@ -23,6 +23,7 @@
 #'
 #' @return Matrix with indices for valid windows for GGIR and for additional sensor output
 #' @export
+#' `r lifecycle::badge("experimental")`
 #'
 getValidDayIndices = function(x, 
                               includecrit_day_spt = NULL,

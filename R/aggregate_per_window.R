@@ -18,6 +18,7 @@
 #' @return aggregated data frame.
 #' @export
 #' @import plyr
+#' `r lifecycle::badge("experimental")`
 #'
 aggregate_per_window = function(tspath, outputdir, GGIR_output_dir,
                                 FUNs = list(n = function(x) sum(!is.na(x)),

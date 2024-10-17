@@ -13,7 +13,7 @@
 #' x = load("myfile.RData")
 #' exists("x")
 #' }
-#' 
+#' `r lifecycle::badge("experimental")`
 loadRData = function(fileName){
   #loads an RData file, and returns it
   mdat = NULL
