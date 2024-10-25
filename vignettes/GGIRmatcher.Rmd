@@ -1,7 +1,3 @@
-```{r}
-
-```
-
 ---
 title: "How to use GGIRmatcher"
 author: "Jairo H Migueles"
@@ -28,14 +24,31 @@ library(GGIRmatcher)
 
 # Pre-requisites
 
-Using GGIRmatcher require that you have previously run GGIR over your accelerometer data, and additionally that you have cleaned and stored your additional sensor data as RData files.
+Using GGIRmatcher require that you have previously run GGIR over your
+accelerometer data, and additionally that you have cleaned and stored
+your additional sensor data as RData files.
 
-As additional sensors might have different cleaning necessities, this is a step that each user should approach based on their needs and requirements. The RData files from the additional sensor are expected to contain a two-column data frame, including: timestamp and the output of interest.
+As any sensor implies different data cleaning necessities, this is
+a step that each user should approach based on their needs and
+requirements. The RData files from the additional sensor are expected to
+contain a two-column data frame, including: time stamp in ISO8601 format and 
+the output of interest.
 
-Also, it is important that the RData files do only contain this data frame, with no additional objects. This package includes an example raw output file from a
+Also, it is important that the RData files do only contain the data
+frame, with no additional objects. For example, the sample raw csv data
 
-```{r echo=FALSE}
+```{r rawfile, echo=TRUE}
+raw = data.table::fread(system.file("extdata", "cgm_raw_sample.csv", 
+                                    package = "GGIRmatcher"))
+knitr::kable(head(raw))
+```
 
+This file was read and cleaned so that the RData output looks like this:
+
+```{r rawfile, echo=TRUE}
+time = cleanCGM::formatTime(raw, ts_indices = 1:nrow(raw))
+knitr::kable
+(head(raw))
 ```
 
 # How to match the data
@@ -117,4 +130,5 @@ results folder
 
     -   full window-level report (MM, WW, OO, Segments)
 
--   variableDictionary (user is responsible for filling up the additional sensor output descriptions)
+-   variableDictionary (user is responsible for filling up the
+    additional sensor output descriptions)
