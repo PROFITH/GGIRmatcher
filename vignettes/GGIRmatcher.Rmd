@@ -45,10 +45,9 @@ knitr::kable(head(raw))
 
 This file was read and cleaned so that the RData output looks like this:
 
-```{r rawfile, echo=TRUE}
-time = cleanCGM::formatTime(raw, ts_indices = 1:nrow(raw))
-knitr::kable
-(head(raw))
+```{r cleanfile, echo=TRUE}
+# time = cleanCGM::formatTime(raw, ts_indices = 1:nrow(raw))
+knitr::kable(head(cgm_cleaned))
 ```
 
 # How to match the data
