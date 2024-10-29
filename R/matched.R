@@ -1,0 +1,23 @@
+#' Matched GGIR and CGM Example Files
+#'
+#' Matched accelerometer and cgm file
+#'
+#' @format ## `matched`
+#' A data frame with 21,047 rows and 13 columns:
+#' \describe{
+#'   \item{timestamp}{Character containing time stamp in ISO8601 format}
+#'   \item{timenum}{Numeric indicator of the timestamp as seconds from 1970-1-1}
+#'   \item{GLUC}{Numeric. Glucose in mg/dL}
+#'   \item{ACC}{Numeric. Acceleration in mili-gravity units}
+#'   \item{SleepPeriodTime}{1=Sleep Period Time window}
+#'   \item{invalidepoch}{1=invalid epoch}
+#'   \item{guider}{Numeric indicator of guider used}
+#'   \item{window}{Numeric indicator of window}
+#'   \item{angle}{Numeric. Angle derived from the accelerometer Z axis}
+#'   \item{class_id}{Numeric indicator of the behavior class classified in GGIR}
+#'   \item{invalid_fullwindow}{Numeric, percentage of the full window classified as invalid}
+#'   \item{invalid_sleepperiod}{Numeric, percentage of the sleep period time window classified as invalid}
+#'   \item{invalid_wakinghours}{Numeric, percentage of the awake time window classified as invalid}
+#' }
+#' @source TEMPUS project
+"matched"

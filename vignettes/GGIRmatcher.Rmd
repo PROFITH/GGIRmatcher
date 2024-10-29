@@ -18,68 +18,202 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(GGIRmatcher)
-```
+The purpose of `GGIRmatcher` is to match accelerometer data processed
+with the [GGIR
+package](https://cran.r-project.org/web/packages/GGIR/index.html) with
+data collected from other sensors. In this first available version of
+the package, all the procedures have been tested using continuous
+glucose monitors, thus, further developments might be needed to adapt
+`GGIRmatcher` to the characteristics and requirements of other types of
+sensors.
 
-# Pre-requisites
+The package is designed to be able to match the data from GGIR with the
+data from the other sensor based on the timestamps, thus it is the user
+responsibility to make sure that time stamps are comparable across
+sensors as GGIRmatcher will trust the input time stamps.
 
-Using GGIRmatcher require that you have previously run GGIR over your
-accelerometer data, and additionally that you have cleaned and stored
-your additional sensor data as RData files.
+## Pre-requisites
 
-As any sensor implies different data cleaning necessities, this is
-a step that each user should approach based on their needs and
+Using GGIRmatcher require that:
+
+1.  Accelerometer data has been processed beforehand with GGIR (you are
+    expected to provide the GGIR output directory as input parameter in
+    GGIRmatcher).
+
+2.  The additional sensor data has been conveniently cleaned and stored
+    as RData files.
+
+### Example of additional sensor data cleaning
+
+As any sensor implies different data cleaning necessities, this is a
+step that each user should approach based on their needs and
 requirements. The RData files from the additional sensor are expected to
-contain a two-column data frame, including: time stamp in ISO8601 format and 
-the output of interest.
+only contain a two-column data frame, including: time stamp in ISO8601
+format and the output of interest.
 
-Also, it is important that the RData files do only contain the data
-frame, with no additional objects. For example, the sample raw csv data
+This package contain an example raw recording from a continous glucose
+monitor that comes in the format of ".csv". Table 1 shows the first rows
+of such a recording.
 
-```{r rawfile, echo=TRUE}
+```{r rawfile, echo=FALSE, tab.cap="Table 1. First records from a raw continuous glucose monitor recording (accesible at 'inst/extdata/cgm_raw_sample.csv')."}
 raw = data.table::fread(system.file("extdata", "cgm_raw_sample.csv", 
                                     package = "GGIRmatcher"))
-knitr::kable(head(raw))
+knitr::kable(raw[1:4,1:5])
 ```
 
-This file was read and cleaned so that the RData output looks like this:
+This file was read and cleaned so that a two-column data frame with time
+stamp in ISO8601 format and glucose readings are stored in RData files.
+Note that, conveniently, also the units of measurement for glucose were
+converted to mg/dL in the cleaning process (Table 2).
 
-```{r cleanfile, echo=TRUE}
-# time = cleanCGM::formatTime(raw, ts_indices = 1:nrow(raw))
-knitr::kable(head(cgm_cleaned))
+```{r cleanfile, echo=FALSE, tab.cap="Table 2. Cleaned version of the raw continous glucose monitor data."}
+knitr::kable(GGIRmatcher::cgm_cleaned[1:4,])
 ```
 
-# How to match the data
+## How to match the data with GGIRmatcher
 
-## 1- Match time series at epoch level
+### 1- Match time series at epoch level
+
+First, the function `match_time_series` can be used to load the time
+series from GGIR and the time series from the other sensor. Time zones
+and daylight saving time days are considered and handled conveniently in
+this function.
 
 ``` r
 library(GGIRmatcher) 
 match_time_series(
-  GGIR_output_dir,
-  additional_ts_dir,
-  outputdir,
-  add_metric_name = NA,
-  idloc = "_",
-  tz = Sys.timezone(),
-  overwrite = F,
-  verbose = T)
+  GGIR_output_dir = "C:/myproject/output_myproject",
+  additional_ts_dir = "C:/myproject/output_myothersensor",
+  outputdir = "C:/myproject/output_matched",
+  add_metric_name = "GLUC",
+  idloc = "_")
 ```
 
-## 2- Aggregate per window
+The description of the parameters in the function above can be found at
+the documentation file for the function. In brief, these are the
+parameters we are using in this example:
 
-1.  Define functions to apply to the additional sensor data:
+-   **GGIR_output_dir = "C:/myproject/output_myproject":** path to the
+    folder containing the output produced by GGIR (in this example, this
+    would be the folder "output_myproject")
 
-Here some examples.
+-   **GGIR additional_ts_dir = "C:/myproject/output_myothersensor":**
+    path to the folder containing the cleaned output data from the other
+    sensor (in this example, the folder "output_myothersensor"). This
+    would be, the RData files containing the data frames as the one
+    shown in Table 2.
+
+-   **outputdir = "C:/myproject/output_matched":** path to the folder
+    that will be used by GGIRmatcher to store the new output produced
+    (here, "output_matched").
+
+-   **add_metric_name = "GLUC":** character with the column name in the
+    cleaned output that contains the metric to be matched with the
+    acceleration from GGIR. In this example, the name is GLUC as can be
+    seen in Table 2. If this is not provided, GGIRmatcher will try to
+    guess the name by looking for column names that are not supposed to
+    be part of the GGIR output, yet this can be risky.
+
+-   **idloc = "\_":** character used for the identificaiton of the
+    recording ID. This is important as GGIRmatcher will match GGIR
+    output with the additional sensor based on the ID. Therefore, the
+    IDs should be exactly the same in the GGIR output and here.
+    GGIRmatcher extracts the ID from the file name, and will use the
+    part of the file name preceding the first occurrence of the
+    character indicated in idloc.
+
+The output of this function is a set of RData files (one per matched
+recording) stored in the output directory (within the "meta/ms5.outraw")
+subfolder. These RData files contain a data frame named ts with 13
+columns.
+
+```{r matchedfile, echo=FALSE, tab.cap="Table 3. Matched CGM and accelerometer data."}
+matched_cl = GGIRmatcher::matched
+matched_cl[is.na(matched_cl)] = ""
+knitr::kable(matched_cl[1:4,])
+```
+
+In this case, the CGM monitor started collecting data before the accelerometer
+was initialized. Therefore, the first rows do only contain CGM data. Figure 1
+shows the CGM and accelerometer data matched.
+
+```{r fig1, echo=FALSE, fig.width=8, fig.cap="Figure 1. Visualization of the first 2 days of data collected with the two devices."}
+from = as.numeric(as.POSIXct("2024-04-01T12:00:00+0200", 
+                             format = "%Y-%m-%dT%H:%M:%S%z"))
+to = grep("2024-04-03T12:00:00", GGIRmatcher::matched$timestamp)
+d = GGIRmatcher::matched[1:to,]
+time = as.POSIXct(d$timestamp, format = "%Y-%m-%dT%H:%M:%S%z")
+xlim = as.POSIXct(c("2024-04-01T12:00:00+0200",
+                    d$timestamp[nrow(d)]),
+                  format = "%Y-%m-%dT%H:%M:%S%z")
+wu = which(diff(c(0,d$SleepPeriodTime)) == -1)
+so = which(diff(c(0,d$SleepPeriodTime)) == 1)
+wu = as.POSIXct(d$timestamp[wu], format = "%Y-%m-%dT%H:%M:%S%z")
+so = as.POSIXct(d$timestamp[so], format = "%Y-%m-%dT%H:%M:%S%z")
+nights = as.POSIXct(grep("00:00:00", d$timestamp, value = T), format = "%Y-%m-%dT%H:%M:%S%z")
+# plot
+par(mfrow = c(2,1), mar = c(1,4,1,1), las = 1)
+plot(time, d$ACC, type = "l", lwd = 1, col = "#004D40",
+     xlim = xlim, ylim = c(0, 300), axes = F, bty = "n",
+     ylab = "", xlab = "")
+title(ylab = "Acceleration (mg/dL)", cex.lab = 0.8)
+rect(xleft = so, xright = wu, ybottom = -50, ytop = 300,
+     col = "#D3E8FA", border = NA)
+lines(x = time, y = d$ACC, col = "#004D40")
+abline(v = seq.POSIXt(xlim[1], xlim[2], by = 4*60*60),
+       col = "grey", lty = "dotted")
+axis(side = 2, cex.axis = 0.8)
+abline(v = nights)
+par(mar = c(2,4,0,1))
+sel = which(!is.na(d$GLUC))
+plot(time[sel], d$GLUC[sel], type = "l", lwd = 2, col = "#D81B60",
+     xlim = xlim, axes = F, bty = "n",
+     ylab = "", xlab = "")
+rect(xleft = so, xright = wu, ybottom = -5, ytop = 300,
+     col = "#D3E8FA", border = NA)
+title(ylab = "Glucose (mg/dL)", cex.lab = 0.8)
+axis(side = 2, cex.axis = 0.8)
+lines(x = time[sel], y = d$GLUC[sel], col = "#D81B60", lwd = 2)
+axis(side = 1, at = seq.POSIXt(xlim[1], xlim[2], by = 4*60*60),
+     labels = format(seq.POSIXt(xlim[1], xlim[2], by = 4*60*60), format = "%H"),
+     tick = F, line = -0.5)
+abline(v = nights)
+par(mar = c(2,4,0,1))
+
+```
+
+### 2- Aggregate per window of interest
+
+In GGIRmatcher, the data will be aggregated in some different window
+types, following the methods used by GGIR. This is:
+
+-   **MM windows:** midnight to midnight, this matches the calendar
+    dates.
+
+-   **WW windows:** windows starting the moment the participant wakes up
+    and finishing the moment the participant wakes up the next day.
+    Wake-up times are the ones detected in GGIR.
+
+-   **OO windows:** windows starting the moment the participant falls
+    sleep and finishing the moment the participant falls sleep the next
+    day. Sleep onset times are the ones detected in GGIR.
+
+-   **Segments of the day:** User-defined segments of the day. As for
+    now, GGIR only supports integer indicators of segments of the day,
+    for example: c(0, 6, 12, 18, 24) will include windows from 0am to
+    6am, from 6am to 12pm, from 12pm to 6pm, and from 6pm to the next
+    0am.
+
+For the data aggregation, the user should define how the data will be
+aggregated, i.e., what functions should be applied to the additional
+sensor data. This can be as simple as calculating the mean, or as
+complex as including long functions with advanced calculations. In this
+example, we are using a list of two functions to calculate the mean, and
+the standard deviation for the additional sensor data:
 
 ``` r
-myfuns = list(mean = function(x) mean(x, na.rm = T),        # mean
-              median = function(x) median(x, na.rm = T),    # median
-              SD = function(x) sd(x, na.rm = T),            # standard deviation
-              CV = function(x) sd(x, na.rm = T) / mean(x, na.rm = T), # coefficient of variation
-              nCGM_levels = function(x) table(cut(x, breaks = c(0,54,70,140,180,250,Inf), right = F)), # n recordings in levels of the additional sensor output
-              AUC = function(x, time) pracma::trapz(time[!is.na(x)]/60, x[!is.na(x)])) # area under the curve
+myfuns = list(mean = function(x) mean(x, na.rm = T),  
+              SD = function(x) sd(x, na.rm = T))
 ```
 
 2.  Aggregate per window:
@@ -97,7 +231,7 @@ aggregate_per_window(
   verbose = TRUE)
 ```
 
-## 3- Extract full window-level report
+### 3- Extract full window-level report
 
 ``` r
 full_window_report(
@@ -113,7 +247,7 @@ full_window_report(
   ...)
 ```
 
-# The output of GGIRmatcher
+## The output of GGIRmatcher
 
 It mimics GGIR output folder structure
 
