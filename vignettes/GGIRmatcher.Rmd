@@ -184,7 +184,7 @@ par(mar = c(2,4,0,1))
 
 ### 2- Aggregate per window of interest
 
-In GGIRmatcher, the data will be aggregated in some different window
+Next, the function aggregate_per_window aggregates the data in some different window
 types, following the methods used by GGIR. This is:
 
 -   **MM windows:** midnight to midnight, this matches the calendar
@@ -216,48 +216,69 @@ myfuns = list(mean = function(x) mean(x, na.rm = T),
               SD = function(x) sd(x, na.rm = T))
 ```
 
-2.  Aggregate per window:
-
 ``` r
-aggregate_per_window(
-  tspath,
-  outputdir,
-  GGIR_output_dir,
-  FUNs = list(n = function(x) sum(!is.na(x)), mean = mean),
-  qwindow = NULL,
-  qwindow_names = NULL,
-  overwrite = FALSE,
-  tz = Sys.timezone(),
-  verbose = TRUE)
+aggregate_per_window(tspath = "output_matched/meta/ms5.outraw/",
+                     outputdir = "C:/myproject",
+                     GGIR_output_dir = "C:/myproject/output_myproject",
+                     qwindow = c(0, 6, 12, 18),
+                     FUNs = myfuns, overwrite = F)
+```
+
+The output of this function is a set of RData files (one per matched
+recording) stored in the output directory (within the "meta/ms5.out")
+subfolder. These RData files contain a with all the window summaries 
+that apply. Table 4 shows an example.
+
+```{r aggperwindow, echo=FALSE, tab.cap="Table 4. Window aggregates for the example file."}
+sel = which(GGIRmatcher::aggperwindow$calendar_date %in% c("2024-04-01",
+                                                           "2024-04-02",
+                                                           "2024-04-03") &
+              GGIRmatcher::aggperwindow$window %in% c("MM", "OO", "WW"))
+vars = c("ID", "window", "window_number", "calendar_date", "weekday",
+         "start_date", "start_time", "end_date", "end_time",
+         "dur_day_spt_min", "dur_day_min", "dur_spt_min",
+         "dur_spt_sleep_min", "dur_day_total_IN_min", 
+         "dur_day_total_LIG_min", "dur_day_total_MOD_min",
+         "dur_day_total_VIG_min",
+         "mean_GLUC_day_spt", "mean_GLUC_day", "mean_GLUC_spt",
+         "SD_GLUC_day_spt", "SD_GLUC_day", "SD_GLUC_spt")
+show = GGIRmatcher::aggperwindow[sel,vars]
+knitr::kable(show[order(show$window),])
 ```
 
 ### 3- Extract full window-level report
 
+Finally, the last step in the process is to store the reports of interest in csv format. `GGIRmatcher` will only store a report per window type, with an indicator of the valid windows for the accelerometer (GGIR output) and for the additional sensor (in this case, the CGM output). For this, we use the `full_window_report function`.
+
 ``` r
-full_window_report(
-  outputdir,
-  GGIR_output_dir = NULL,
-  includecrit_day_spt = NULL,
-  includecrit_day = NULL,
-  includecrit_spt = NULL,
-  additional_sf_seconds = NULL,
-  minimum_WW_OO_length = 0,
-  minimum_segments_length = 0,
-  verbose = TRUE,
-  ...)
+full_window_report(outputdir = "C:/myproject",
+                   GGIR_output_dir = "C/myproject/output_myproject/",
+                   additional_sf_seconds = 900,
+                   min_WW_OO_length = 16,
+                   min_segment_length_hours = 6
+                   # GGIR cleaning parameters 
+                   includedaycrit = 0.7, 
+                   includenightcrit = 0.7, 
+                   includedaycrit.part5 = 0.7,
+                   # cleaning parameters for additional monitor
+                   includecrit_day_spt = 0.7, 
+                   includecrit_day = 0.7, 
+                   includecrit_spt = 0.7)
 ```
 
 ## The output of GGIRmatcher
 
-It mimics GGIR output folder structure
+As probably noticed by now, `GGIRmatcher` mimics the output folder 
+structure of GGIR and creates a meta and a results folder with the 
+pertinent sub-folders:
 
-meta folder
+**meta** folder
 
 -   ms5.out
 
 -   ms5.outraw
 
-results folder
+**results** folder
 
 -   QC
 
