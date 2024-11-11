@@ -43,6 +43,22 @@ Using GGIRmatcher require that:
 2.  The additional sensor data has been conveniently cleaned and stored
     as RData files.
 
+### Example of GGIR function call
+
+The bare minimum of GGIR parameters that needs to be defined for GGIRmatcher to
+work is as follows:
+
+``` r
+library(GGIR) 
+GGIR(datadir = "C:/myproject/acc_files/",
+     outputdir = "./",
+     idloc = 2,
+     save_ms5rawlevels = TRUE, 
+     save_ms5raw_format = "RData",
+     save_ms5raw_without_invalid = FALSE,
+     timewindow = c("MM", "WW", "OO"))
+```
+
 ### Example of additional sensor data cleaning
 
 As any sensor implies different data cleaning necessities, this is a
