@@ -24,7 +24,7 @@ loadRData = function(fileName){
     rm(mdat)
     gc()
   } else {
-    ts = get(ls()[ls() != "fileName"])
+    ts = get(ls()[!ls() %in% c("fileName", "mdat")])
   }
   return(ts)
 }
