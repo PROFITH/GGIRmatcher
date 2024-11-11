@@ -299,6 +299,3 @@ pertinent sub-folders:
 -   QC
 
     -   full window-level report (MM, WW, OO, Segments)
-
--   variableDictionary (user is responsible for filling up the
-    additional sensor output descriptions)
