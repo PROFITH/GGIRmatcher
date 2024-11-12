@@ -47,8 +47,8 @@ Using GGIRmatcher require that:
 
 Information about GGIR R package is available at https://wadpac.github.io/GGIR/
 
-The bare minimum GGIR parameters needed to make the output work with this pipeline is:
-
+The bare minimum GGIR parameters needed for GGIRmatcher to
+work is as follows:
 
 ``` r
 library(GGIR)
@@ -59,6 +59,7 @@ GGIR(datadir = "C:/myproject",
      save_ms5raw_format = "RData",
      save_ms5raw_without_invalid = FALSE,
      timewindow = c("MM", "WW", "OO")) # Optional, if MM, WW and OO windows are required
+
 ```
 
 ### Example of additional sensor data cleaning
@@ -301,6 +302,3 @@ pertinent sub-folders:
 -   QC
 
     -   full window-level report (MM, WW, OO, Segments)
-
--   variableDictionary (user is responsible for filling up the
-    additional sensor output descriptions)
