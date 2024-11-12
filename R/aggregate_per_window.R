@@ -29,7 +29,7 @@ aggregate_per_window = function(tspath, outputdir, GGIR_output_dir,
                                 verbose = TRUE) {
   FUNs = append(FUNs, c(n = function(x) sum(!is.na(x))), after = 0)
   # create directory to save daylevel output
-  dir2save = file.path(outputdir, "GGIRmatcher", "meta", "ms5.out")
+  dir2save = file.path(outputdir, "meta", "ms5.out")
   suppressWarnings(dir.create(dir2save, recursive = T))
   files = dir(tspath, full.names = T)
   ggir_files = dir(file.path(GGIR_output_dir, "meta", "ms5.out"), full.names = T)
