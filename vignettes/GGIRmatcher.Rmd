@@ -101,9 +101,9 @@ this function.
 ``` r
 library(GGIRmatcher) 
 match_time_series(
-  GGIR_output_dir = "C:/myproject/output_myproject",
-  additional_ts_dir = "C:/myproject/output_myothersensor",
-  outputdir = "C:/myproject/output_matched",
+  GGIR_output_dir = "C:/myproject/output/GGIR/output_acc",
+  additional_ts_dir = "C:/myproject/output/sensor2/",
+  outputdir = "C:/myproject/output/GGIRmatcher",
   add_metric_name = "GLUC",
   idloc = "_")
 ```
@@ -236,9 +236,9 @@ myfuns = list(mean = function(x) mean(x, na.rm = T),
 ```
 
 ``` r
-aggregate_per_window(tspath = "output_matched/meta/ms5.outraw/",
-                     outputdir = "C:/myproject",
-                     GGIR_output_dir = "C:/myproject/output_myproject",
+aggregate_per_window(tspath = "C:/myproject/output/GGIRmatcher/meta/ms5.outraw/",
+                     outputdir = "C:/myproject/output/GGIRmatcher/",
+                     GGIR_output_dir = "C:/myproject/output/GGIR/output_acc/",
                      qwindow = c(0, 6, 12, 18),
                      FUNs = myfuns, overwrite = F)
 ```
@@ -270,8 +270,8 @@ knitr::kable(show[order(show$window),])
 Finally, the last step in the process is to store the reports of interest in csv format. `GGIRmatcher` will only store a report per window type, with an indicator of the valid windows for the accelerometer (GGIR output) and for the additional sensor (in this case, the CGM output). For this, we use the `full_window_report function`.
 
 ``` r
-full_window_report(outputdir = "C:/myproject",
-                   GGIR_output_dir = "C:/myproject/output_myproject/",
+full_window_report(outputdir = "C:/myproject/output/GGIRmatcher/",
+                   GGIR_output_dir = "C:/myproject/output/GGIR/output_acc/",
                    additional_sf_seconds = 900,
                    min_WW_OO_length = 16,
                    min_segment_length_hours = 6
