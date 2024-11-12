@@ -40,7 +40,7 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
                              overwrite = F,
                              verbose = T) {
   # create output directory
-  dir2save = file.path(outputdir, "GGIRmatcher", "meta", "ms5.outraw")
+  dir2save = file.path(outputdir, "meta", "ms5.outraw")
   suppressWarnings(dir.create(dir2save, recursive = T))
   # IDENTIFY DIRECTORIES ----------------------------------------------------
   # GGIR
