@@ -43,6 +43,24 @@ Using GGIRmatcher require that:
 2.  The additional sensor data has been conveniently cleaned and stored
     as RData files.
 
+### Example of accelerometer data processing with GGIR
+
+Information about GGIR R package is available at https://wadpac.github.io/GGIR/
+
+The bare minimum GGIR parameters needed to make the output work with this pipeline is:
+
+
+``` r
+library(GGIR)
+GGIR(datadir = "C:/myproject",
+     outputdir = "C:/myproject/output_myproject/",
+     idloc = 2, # adjust to make ID compatible across sensors
+     save_ms5rawlevels = TRUE,
+     save_ms5raw_format = "RData",
+     save_ms5raw_without_invalid = FALSE,
+     timewindow = c("MM", "WW", "OO")) # Optional, if MM, WW and OO windows are required
+```
+
 ### Example of additional sensor data cleaning
 
 As any sensor implies different data cleaning necessities, this is a
@@ -252,7 +270,7 @@ Finally, the last step in the process is to store the reports of interest in csv
 
 ``` r
 full_window_report(outputdir = "C:/myproject",
-                   GGIR_output_dir = "C/myproject/output_myproject/",
+                   GGIR_output_dir = "C:/myproject/output_myproject/",
                    additional_sf_seconds = 900,
                    min_WW_OO_length = 16,
                    min_segment_length_hours = 6
