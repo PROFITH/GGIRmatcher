@@ -2,6 +2,7 @@
 
 export(aggregate_per_window)
 export(analyseSegment)
+export(create_folder_structure)
 export(fix_window_number)
 export(full_window_report)
 export(getValidDayIndices)
