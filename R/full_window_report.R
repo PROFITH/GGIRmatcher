@@ -53,7 +53,11 @@ full_window_report = function(GGIRmatcher_outputdir,
   # -------------------------------------------------------------------------
   input = list(...)
   # redefine directories to facilitate access to files of interest
-  GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
+  GGIR_outputdir = grep("output_", dir(GGIR_outputdir, full.names = T), value = T)
+  if (length(GGIR_outputdir) != 1) {
+    stop(paste0("Your GGIR_outputdir does not contain one single folder for the",
+                " GGIR output. Handling of multiple outputs from GGIR is not supported."))
+  }
   # create output directory
   dir2save = file.path(GGIRmatcher_outputdir, "results", "QC")
   suppressWarnings(dir.create(dir2save, recursive = T))

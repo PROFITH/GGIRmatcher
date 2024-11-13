@@ -27,7 +27,11 @@ aggregate_per_window = function(GGIRmatcher_outputdir, GGIR_outputdir,
                                 tz = Sys.timezone(),
                                 verbose = TRUE) {
   # redefine directories to facilitate access to files of interest
-  GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
+  GGIR_outputdir = grep("output_", dir(GGIR_outputdir, full.names = T), value = T)
+  if (length(GGIR_outputdir) != 1) {
+    stop(paste0("Your GGIR_outputdir does not contain one single folder for the",
+                " GGIR output. Handling of multiple outputs from GGIR is not supported."))
+  }
   # include function to count number of recordings in window
   FUNs = append(FUNs, c(n = function(x) sum(!is.na(x))), after = 0)
   # create directory to save daylevel output
