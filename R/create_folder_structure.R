@@ -26,10 +26,6 @@ create_folder_structure = function(outputdir,
   if (!dir.exists(GGIR_output_folder)) dir.create(GGIR_output_folder)
   if (!dir.exists(additional_output_folder)) dir.create(additional_output_folder)
   if (!dir.exists(matched_output_folder)) dir.create(matched_output_folder)
-  # info messages
-  cat(paste("\nThe GGIR output folder is", GGIR_output_folder))
-  cat(paste("\nThe additional sensor output folder is", additional_output_folder))
-  cat(paste("\nThe matched output folder is", matched_output_folder))
   # return directories
   return(list(GGIR_ouputdir = GGIR_output_folder,
               additional_outputdir = additional_output_folder,
