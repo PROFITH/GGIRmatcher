@@ -40,7 +40,11 @@ match_time_series = function(GGIR_outputdir, additional_outputdir,
                              overwrite = F,
                              verbose = T) {
   # redefine directories to facilitate access to files of interest
-  GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
+  GGIR_outputdir = grep("output_", dir(GGIR_outputdir, full.names = T), value = T)
+  if (length(GGIR_outputdir) != 1) {
+    stop(paste0("Your GGIR_outputdir does not contain one single folder for the",
+                " GGIR output. Handling of multiple outputs from GGIR is not supported."))
+  }
   additional_outputdir = grep("time series", dir(additional_outputdir, full.names = T), value = T)
   # create output directory
   dir2save = file.path(GGIRmatcher_outputdir, "meta", "ms5.outraw")
