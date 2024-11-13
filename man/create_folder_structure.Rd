@@ -20,6 +20,9 @@ create_folder_structure(
 
 \item{matched_dirname}{Character (default = "GGIRmatcher") with the name to be given to the folder that will store the matched output.}
 }
+\value{
+list including paths to the directories to be used for GGIR, additional sensor, and matched output.
+}
 \description{
 This function creates the folder structure to a standard project that will
 use the \code{GGIRmatcher} package. It will create a 3 folders: for the GGIR output,

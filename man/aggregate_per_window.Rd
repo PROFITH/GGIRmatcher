@@ -6,9 +6,8 @@
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 aggregate_per_window(
-  tspath,
-  outputdir,
-  GGIR_output_dir,
+  GGIRmatcher_outputdir,
+  GGIR_outputdir,
   FUNs = list(n = function(x) sum(!is.na(x)), mean = mean),
   qwindow = NULL,
   qwindow_names = NULL,
@@ -18,12 +17,9 @@ aggregate_per_window(
 )
 }
 \arguments{
-\item{tspath}{path to RData files containing the matched time series as done with
-\code{match_time_series}}
+\item{GGIRmatcher_outputdir}{Path to the directory where the output of GGIRmatcher should be stored.}
 
-\item{outputdir}{Pathname to the directory where the output of GGIRmatcher should be stored.}
-
-\item{GGIR_output_dir}{Output directory containing the GGIR output (folder named as "output_\link{...}")}
+\item{GGIR_outputdir}{}
 
 \item{FUNs}{List of functions to be applied to the additional sensor data.}
 
