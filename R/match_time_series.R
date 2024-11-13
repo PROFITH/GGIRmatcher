@@ -41,7 +41,7 @@ match_time_series = function(GGIR_outputdir, additional_outputdir,
                              verbose = T) {
   # redefine directories to facilitate access to files of interest
   GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
-  additional_outputdir = grep("^time", dir(additional_outputdir, full.names = T), value = T)
+  additional_outputdir = grep("time series", dir(additional_outputdir, full.names = T), value = T)
   # create output directory
   dir2save = file.path(GGIRmatcher_outputdir, "meta", "ms5.outraw")
   suppressWarnings(dir.create(dir2save, recursive = T))
