@@ -10,6 +10,7 @@
 #' @param additional_dirname Character (default = "CGM") with the name to be given to the folder that will store the additional sensor output.
 #' @param matched_dirname Character (default = "GGIRmatcher") with the name to be given to the folder that will store the matched output.
 #' 
+#' @return list including paths to the directories to be used for GGIR, additional sensor, and matched output.
 #' @export
 create_folder_structure = function(outputdir, 
                                    GGIR_dirname = "GGIR", 
@@ -29,4 +30,8 @@ create_folder_structure = function(outputdir,
   cat(paste("\nThe GGIR output folder is", GGIR_output_folder))
   cat(paste("\nThe additional sensor output folder is", additional_output_folder))
   cat(paste("\nThe matched output folder is", matched_output_folder))
+  # return directories
+  return(GGIR_ouputdir = GGIR_output_folder,
+         additional_outputdir = additional_output_folder,
+         GGIRmatcher_outputdir = matched_output_folder)
 }
