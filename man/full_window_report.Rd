@@ -6,8 +6,8 @@
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 full_window_report(
-  outputdir,
-  GGIR_output_dir = NULL,
+  GGIRmatcher_outputdir,
+  GGIR_outputdir = NULL,
   includecrit_day_spt = NULL,
   includecrit_day = NULL,
   includecrit_spt = NULL,
@@ -19,9 +19,9 @@ full_window_report(
 )
 }
 \arguments{
-\item{outputdir}{Pathname to folder to store the full window-level reports.}
+\item{GGIRmatcher_outputdir}{Pathname to folder to store the full window-level reports.}
 
-\item{GGIR_output_dir}{Pathname to folder with the GGIR output.}
+\item{GGIR_outputdir}{Path to folder where the GGIR output is stored.}
 
 \item{includecrit_day_spt}{Criteria to include data from the additional sensor in
 the full window as a proportion of recordings available from the total expected
@@ -54,4 +54,7 @@ does not return anything. It stores reports in the results folder.
 Takes the window-level output stored in the meta/ms5.out folder and combines
 them into full window-level report that are stored in csv format in the
 results folder.
+}
+\references{
+GGIR R Package \url{https://github.com/wadpac/GGIR}
 }

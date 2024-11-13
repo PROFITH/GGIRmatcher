@@ -6,33 +6,36 @@
 #' wakingup-to-wakingup, sleeponset-to-sleeponset, and user-defined segments
 #' based on parameter \code{qwindow}.
 #' 
-#' @param tspath path to RData files containing the matched time series as done with 
-#' \code{match_time_series}
 #' @param qwindow Same as in GGIR, but it only supports integer vector for now. 
 #' @param tz Character indicating the time zone to read the timestamps.
 #' @param FUNs List of functions to be applied to the additional sensor data.
-#' @param outputdir Pathname to the directory where the output of GGIRmatcher should be stored.
+#' @param GGIRmatcher_outputdir Path to the directory where the output of GGIRmatcher should be stored.
 #' @param qwindow_names Character vector with names to apply to the qwindows.
 #' @param overwrite Logical indicating whether to overwrite previously-derived output.
+#' @param GGIR_outputdir Path to folder where the GGIR output is stored.
 #' @param verbose Logical indicating whether to print progress messages in the console.
-#' @param GGIR_output_dir Output directory containing the GGIR output (folder named as "output_[...]")
+#'
 #' @return aggregated data frame.
 #' @export
 #' @import plyr
 #'
-aggregate_per_window = function(tspath, outputdir, GGIR_output_dir,
+aggregate_per_window = function(GGIRmatcher_outputdir, GGIR_outputdir,
                                 FUNs = list(n = function(x) sum(!is.na(x)),
                                               mean = mean),
                                 qwindow = NULL, qwindow_names = NULL,
                                 overwrite = FALSE, 
                                 tz = Sys.timezone(),
                                 verbose = TRUE) {
+  # redefine directories to facilitate access to files of interest
+  GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
+  # include function to count number of recordings in window
   FUNs = append(FUNs, c(n = function(x) sum(!is.na(x))), after = 0)
   # create directory to save daylevel output
-  dir2save = file.path(outputdir, "meta", "ms5.out")
+  dir2save = file.path(GGIRmatcher_outputdir, "meta", "ms5.out")
   suppressWarnings(dir.create(dir2save, recursive = T))
+  tspath = file.path(GGIRmatcher_outputdir, "meta", "ms5.outraw")
   files = dir(tspath, full.names = T)
-  ggir_files = dir(file.path(GGIR_output_dir, "meta", "ms5.out"), full.names = T)
+  ggir_files = dir(file.path(GGIR_outputdir, "meta", "ms5.out"), full.names = T)
   output = NULL
   for (fi in 1:length(files)) {
     id = ts = cutpoints = legend = ggir_available = additional_available = NULL

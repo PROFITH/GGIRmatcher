@@ -53,7 +53,7 @@ work is as follows:
 ``` r
 library(GGIR)
 GGIR(datadir = "C:/myproject",
-     outputdir = "C:/myproject/output_myproject/",
+     GGIRmatcher_outputdir = "C:/myproject/output_myproject/",
      idloc = 2, # adjust to make ID compatible across sensors
      save_ms5rawlevels = TRUE,
      save_ms5raw_format = "RData",
@@ -101,9 +101,9 @@ this function.
 ``` r
 library(GGIRmatcher) 
 match_time_series(
-  GGIR_output_dir = "C:/myproject/output/GGIR/output_acc",
-  additional_ts_dir = "C:/myproject/output/sensor2/",
-  outputdir = "C:/myproject/output/GGIRmatcher",
+  GGIR_outputdir = "C:/myproject/output/GGIR/",
+  additional_outputdir = "C:/myproject/output/sensor2/",
+  GGIRmatcher_outputdir = "C:/myproject/output/GGIRmatcher",
   add_metric_name = "GLUC",
   idloc = "_")
 ```
@@ -112,28 +112,28 @@ The description of the parameters in the function above can be found at
 the documentation file for the function. In brief, these are the
 parameters we are using in this example:
 
--   **GGIR_output_dir = "C:/myproject/output_myproject":** path to the
+-   **GGIR_outputdir:** path to the
     folder containing the output produced by GGIR (in this example, this
     would be the folder "output_myproject")
 
--   **GGIR additional_ts_dir = "C:/myproject/output_myothersensor":**
+-   **GGIR additional_outputdir:**
     path to the folder containing the cleaned output data from the other
     sensor (in this example, the folder "output_myothersensor"). This
     would be, the RData files containing the data frames as the one
     shown in Table 2.
 
--   **outputdir = "C:/myproject/output_matched":** path to the folder
+-   **GGIRmatcher_outputdir:** path to the folder
     that will be used by GGIRmatcher to store the new output produced
     (here, "output_matched").
 
--   **add_metric_name = "GLUC":** character with the column name in the
+-   **add_metric_name:** character with the column name in the
     cleaned output that contains the metric to be matched with the
     acceleration from GGIR. In this example, the name is GLUC as can be
     seen in Table 2. If this is not provided, GGIRmatcher will try to
     guess the name by looking for column names that are not supposed to
     be part of the GGIR output, yet this can be risky.
 
--   **idloc = "\_":** character used for the identificaiton of the
+-   **idloc** character used for the identificaiton of the
     recording ID. This is important as GGIRmatcher will match GGIR
     output with the additional sensor based on the ID. Therefore, the
     IDs should be exactly the same in the GGIR output and here.
@@ -236,9 +236,8 @@ myfuns = list(mean = function(x) mean(x, na.rm = T),
 ```
 
 ``` r
-aggregate_per_window(tspath = "C:/myproject/output/GGIRmatcher/meta/ms5.outraw/",
-                     outputdir = "C:/myproject/output/GGIRmatcher/",
-                     GGIR_output_dir = "C:/myproject/output/GGIR/output_acc/",
+aggregate_per_window(GGIRmatcher_outputdir = "C:/myproject/output/GGIRmatcher/",
+                     GGIR_outputdir = "C:/myproject/output/GGIR/",
                      qwindow = c(0, 6, 12, 18),
                      FUNs = myfuns, overwrite = F)
 ```
@@ -270,8 +269,8 @@ knitr::kable(show[order(show$window),])
 Finally, the last step in the process is to store the reports of interest in csv format. `GGIRmatcher` will only store a report per window type, with an indicator of the valid windows for the accelerometer (GGIR output) and for the additional sensor (in this case, the CGM output). For this, we use the `full_window_report function`.
 
 ``` r
-full_window_report(outputdir = "C:/myproject/output/GGIRmatcher/",
-                   GGIR_output_dir = "C:/myproject/output/GGIR/output_acc/",
+full_window_report(GGIRmatcher_outputdir = "C:/myproject/output/GGIRmatcher/",
+                   GGIR_outputdir = "C:/myproject/output/GGIR/",
                    additional_sf_seconds = 900,
                    min_WW_OO_length = 16,
                    min_segment_length_hours = 6
@@ -288,7 +287,7 @@ full_window_report(outputdir = "C:/myproject/output/GGIRmatcher/",
 ## The output of GGIRmatcher
 
 As probably noticed by now, `GGIRmatcher` mimics the output folder 
-structure of GGIR and creates a meta and a results folder with the 
+structure of `GGIR` and creates a meta and a results folder with the 
 pertinent sub-folders:
 
 **meta** folder

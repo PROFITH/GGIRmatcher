@@ -5,14 +5,14 @@
 #' Matches the GGIR exported time series in part 5 with other additional
 #' user-provided time series at second level. 
 #' 
-#' @param GGIR_output_dir GGIR output directory (e.g., "output_myproject/"). This 
+#' @param GGIR_outputdir GGIR output directory. This 
 #' output directory is expected to contain only one single time-series subdirectory. 
 #' GGIR generates a subdirectory for each combination of cut-points provided. If more
 #' than one is found, only the first folder (in alphabetical order) will be used for now.
 #' Also, files are expected to be stored in RData format. If you are interested in 
-#' extending this feature to work with multiple thresholdn combinations, or with
+#' extending this feature to work with multiple thresholds combinations, or with
 #' other data formats, please contact the package maintainer.
-#' @param additional_ts_dir Additional output directory (e.g., "my_other_sensor_timeseries/").
+#' @param additional_outputdir Additional output directory (e.g., "my_other_sensor_timeseries/").
 #' This is expected to contain an RData file per each recording. RData files should
 #' contain a data frame (and only a data frame) with two columns: timestamp and the 
 #' metric to include. 
@@ -22,7 +22,7 @@
 #' "ID001_myproject_hipdata.RData" and \code{idloc = "_"}, then the extracted
 #' ID would be "ID001".
 #' @param tz Character indicating the time zone to read the timestamps.
-#' @param outputdir Character with path to output directory to store the matched
+#' @param GGIRmatcher_outputdir Character with path to output directory to store the matched
 #' time series and MM, WW, and OO reports.
 #' @param add_metric_name Character indicating the name to be given to the new added metric.
 #' @param verbose Logical indicating whether to print progress messages in console
@@ -34,24 +34,27 @@
 #' @importFrom GGIR POSIXtime2iso8601 is.ISO8601
 #' @importFrom data.table fread
 #'
-match_time_series = function(GGIR_output_dir, additional_ts_dir,
-                             outputdir, add_metric_name = NA,
+match_time_series = function(GGIR_outputdir, additional_outputdir,
+                             GGIRmatcher_outputdir, add_metric_name = NA,
                              idloc = "_", tz = Sys.timezone(),
                              overwrite = F,
                              verbose = T) {
+  # redefine directories to facilitate access to files of interest
+  GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
+  additional_outputdir = grep("^time", dir(additional_outputdir, full.names = T), value = T)
   # create output directory
-  dir2save = file.path(outputdir, "meta", "ms5.outraw")
+  dir2save = file.path(GGIRmatcher_outputdir, "meta", "ms5.outraw")
   suppressWarnings(dir.create(dir2save, recursive = T))
   # IDENTIFY DIRECTORIES ----------------------------------------------------
   # GGIR
-  ggir_path = list.dirs(dir(file.path(GGIR_output_dir, "meta", "ms5.outraw"),
+  ggir_path = list.dirs(dir(file.path(GGIR_outputdir, "meta", "ms5.outraw"),
                             full.names = T))[1]
-  legend_paths = dir(file.path(GGIR_output_dir, "meta", "ms5.outraw"),
+  legend_paths = dir(file.path(GGIR_outputdir, "meta", "ms5.outraw"),
                        full.names = T, pattern = "*.csv")
   legend_paths = grep("behavioralcodes", legend_paths, value = T)
   legend = data.table::fread(legend_paths[length(legend_paths)], data.table = F)
   if (is.na(ggir_path)) {
-    stop("\nPath ", file.path(GGIR_output_dir, "meta", "ms5.outraw"), 
+    stop("\nPath ", file.path(GGIR_outputdir, "meta", "ms5.outraw"), 
          " does not exist, or does not contain any subfolder with GGIR exported time series.", 
          call. = FALSE)
   } else {
@@ -63,14 +66,14 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
     }
   }
   # Additional directory
-  if (!dir.exists(additional_ts_dir)) {
-    stop("\nPath ", additional_ts_dir, " does not exist.", 
+  if (!dir.exists(additional_outputdir)) {
+    stop("\nPath ", additional_outputdir, " does not exist.", 
          call. = FALSE)
   }
-  add_fnames = dir(additional_ts_dir, pattern = "*.RData$")
+  add_fnames = dir(additional_outputdir, pattern = "*.RData$")
   if (length(add_fnames) == 0) {
     stop(paste0("\nNo RData files found inside the expected additional time series directory: ", 
-                additional_ts_dir), call. = FALSE)
+                additional_outputdir), call. = FALSE)
   }
   # IDENTIFY IDs -------------------------------------------------------
   ggir_ids = unlist(lapply(ggir_fnames, function(x) unlist(strsplit(x, idloc, fixed = T))[1]))
@@ -115,7 +118,7 @@ match_time_series = function(GGIR_output_dir, additional_ts_dir,
       gg = loadRData(f2load)
     }
     if (addav == 1) {
-      f2load = file.path(additional_ts_dir, add_fnames[which(add_ids == id)])
+      f2load = file.path(additional_outputdir, add_fnames[which(add_ids == id)])
       aa = loadRData(f2load)
       # impute timestamps
       t0 = strptime(aa$timestamp[1], format = "%Y-%m-%dT%H:%M:%S%z", tz = tz) 

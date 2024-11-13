@@ -6,9 +6,9 @@
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}}
 \usage{
 match_time_series(
-  GGIR_output_dir,
-  additional_ts_dir,
-  outputdir,
+  GGIR_outputdir,
+  additional_outputdir,
+  GGIRmatcher_outputdir,
   add_metric_name = NA,
   idloc = "_",
   tz = Sys.timezone(),
@@ -17,20 +17,20 @@ match_time_series(
 )
 }
 \arguments{
-\item{GGIR_output_dir}{GGIR output directory (e.g., "output_myproject/"). This
+\item{GGIR_outputdir}{GGIR output directory. This
 output directory is expected to contain only one single time-series subdirectory.
 GGIR generates a subdirectory for each combination of cut-points provided. If more
 than one is found, only the first folder (in alphabetical order) will be used for now.
 Also, files are expected to be stored in RData format. If you are interested in
-extending this feature to work with multiple thresholdn combinations, or with
+extending this feature to work with multiple thresholds combinations, or with
 other data formats, please contact the package maintainer.}
 
-\item{additional_ts_dir}{Additional output directory (e.g., "my_other_sensor_timeseries/").
+\item{additional_outputdir}{Additional output directory (e.g., "my_other_sensor_timeseries/").
 This is expected to contain an RData file per each recording. RData files should
 contain a data frame (and only a data frame) with two columns: timestamp and the
 metric to include.}
 
-\item{outputdir}{Character with path to output directory to store the matched
+\item{GGIRmatcher_outputdir}{Character with path to output directory to store the matched
 time series and MM, WW, and OO reports.}
 
 \item{add_metric_name}{Character indicating the name to be given to the new added metric.}

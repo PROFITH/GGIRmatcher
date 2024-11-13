@@ -7,9 +7,9 @@
 #' results folder.
 #' 
 #'
-#' @param outputdir Pathname to folder to store the full window-level reports.
+#' @param GGIRmatcher_outputdir Pathname to folder to store the full window-level reports.
 #' @param ... GGIR output parameters (for example, sep_reports and dec_reports can be used).
-#' @param GGIR_output_dir Pathname to folder with the GGIR output.
+#' @param GGIR_outputdir Path to folder where the GGIR output is stored.
 #' @param includecrit_day_spt Criteria to include data from the additional sensor in 
 #' the full window as a proportion of recordings available from the total expected 
 #' recordings in window (i.e., 0.7 for 70% of the recordings available).
@@ -29,10 +29,12 @@
 #'
 #' @return does not return anything. It stores reports in the results folder.
 #' @export
+#' @references GGIR R Package <https://github.com/wadpac/GGIR>
 #' @import data.table
 #' @importFrom GGIR extract_params
 #' @importFrom plyr rbind.fill
-full_window_report = function(outputdir, GGIR_output_dir = NULL,
+full_window_report = function(GGIRmatcher_outputdir, 
+                              GGIR_outputdir = NULL,
                               includecrit_day_spt = NULL,
                               includecrit_day = NULL,
                               includecrit_spt = NULL,
@@ -50,19 +52,21 @@ full_window_report = function(outputdir, GGIR_output_dir = NULL,
   #    - Only extracts full window-level report, including indices for valid windows
   # -------------------------------------------------------------------------
   input = list(...)
+  # redefine directories to facilitate access to files of interest
+  GGIR_outputdir = grep("^output_", dir(GGIR_outputdir, full.names = T), value = T)
   # create output directory
-  dir2save = file.path(outputdir, "GGIRmatcher", "results", "QC")
+  dir2save = file.path(GGIRmatcher_outputdir, "results", "QC")
   suppressWarnings(dir.create(dir2save, recursive = T))
   # get parameters for cleaning GGIR output
-  if (!is.null(GGIR_output_dir)) {
-    configpath = file.path(GGIR_output_dir, "config.csv")
+  if (!is.null(GGIR_outputdir)) {
+    configpath = file.path(GGIR_outputdir, "config.csv")
     configfile = ifelse(file.exists(configpath), configpath, NULL)
     params = GGIR::extract_params(input = input, configfile_csv = configfile)
     params_cleaning = params$params_cleaning
     params_output = params$params_output
   }
   # files
-  fnames = dir(file.path(outputdir, "GGIRmatcher", "meta", "ms5.out"), full.names = T)
+  fnames = dir(file.path(GGIRmatcher_outputdir, "meta", "ms5.out"), full.names = T)
   if (is.null(input$f0)) f0 = 1 else f0 = input$f0
   if (is.null(input$f1)) f1 = length(fnames) else f1 = input$f1
   # load fun (from GGIR::g.report.part5)
@@ -277,7 +281,7 @@ full_window_report = function(outputdir, GGIR_output_dir = NULL,
               }
               data.table::fwrite(
                 OF3_clean,
-                file.path(outputdir, "GGIRmatcher", "results", "QC",
+                file.path(GGIRmatcher_outputdir, "results", "QC",
                           paste("part5_daysummary_full_",
                                 uwi[j], "_L", uTRLi[h1], "M", uTRMi[h2], "V", uTRVi[h3],
                                 "_", usleepparam[h4], ".csv", sep = "")), row.names = FALSE, na = "",
