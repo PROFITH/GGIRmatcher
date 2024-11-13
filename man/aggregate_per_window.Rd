@@ -21,7 +21,7 @@ aggregate_per_window(
 
 \item{GGIR_outputdir}{Path to folder where the GGIR output is stored.}
 
-\item{FUNs}{List of functions to be applied to the additional sensor data.}
+\item{FUNs}{Named list of functions to be applied to the additional sensor data.}
 
 \item{qwindow}{Same as in GGIR, but it only supports integer vector for now.}
 

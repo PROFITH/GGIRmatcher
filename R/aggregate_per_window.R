@@ -8,7 +8,7 @@
 #' 
 #' @param qwindow Same as in GGIR, but it only supports integer vector for now. 
 #' @param tz Character indicating the time zone to read the timestamps.
-#' @param FUNs List of functions to be applied to the additional sensor data.
+#' @param FUNs Named list of functions to be applied to the additional sensor data.
 #' @param GGIRmatcher_outputdir Path to the directory where the output of GGIRmatcher should be stored.
 #' @param qwindow_names Character vector with names to apply to the qwindows.
 #' @param overwrite Logical indicating whether to overwrite previously-derived output.
@@ -32,6 +32,8 @@ aggregate_per_window = function(GGIRmatcher_outputdir, GGIR_outputdir,
     stop(paste0("Your GGIR_outputdir does not contain one single folder for the",
                 " GGIR output. Handling of multiple outputs from GGIR is not supported."))
   }
+  # safe checks in function object
+  if (is.null(names(FUNs))) stop("Please provide names to the functions in the FUNs parameter list")
   # include function to count number of recordings in window
   FUNs = append(FUNs, c(n = function(x) sum(!is.na(x))), after = 0)
   # create directory to save daylevel output
