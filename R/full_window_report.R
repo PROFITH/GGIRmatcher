@@ -9,7 +9,7 @@
 #'
 #' @param GGIRmatcher_outputdir Pathname to folder to store the full window-level reports.
 #' @param ... GGIR output parameters (for example, sep_reports and dec_reports can be used).
-#' @param GGIR_outputdir Pathname to folder with the GGIR output.
+#' @param GGIR_outputdir Path to folder where the GGIR output is stored.
 #' @param includecrit_day_spt Criteria to include data from the additional sensor in 
 #' the full window as a proportion of recordings available from the total expected 
 #' recordings in window (i.e., 0.7 for 70% of the recordings available).

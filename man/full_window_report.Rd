@@ -21,7 +21,7 @@ full_window_report(
 \arguments{
 \item{GGIRmatcher_outputdir}{Pathname to folder to store the full window-level reports.}
 
-\item{GGIR_outputdir}{Pathname to folder with the GGIR output.}
+\item{GGIR_outputdir}{Path to folder where the GGIR output is stored.}
 
 \item{includecrit_day_spt}{Criteria to include data from the additional sensor in
 the full window as a proportion of recordings available from the total expected

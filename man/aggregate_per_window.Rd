@@ -19,7 +19,7 @@ aggregate_per_window(
 \arguments{
 \item{GGIRmatcher_outputdir}{Path to the directory where the output of GGIRmatcher should be stored.}
 
-\item{GGIR_outputdir}{}
+\item{GGIR_outputdir}{Path to folder where the GGIR output is stored.}
 
 \item{FUNs}{List of functions to be applied to the additional sensor data.}
 

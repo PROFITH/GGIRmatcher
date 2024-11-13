@@ -12,7 +12,7 @@
 #' @param GGIRmatcher_outputdir Path to the directory where the output of GGIRmatcher should be stored.
 #' @param qwindow_names Character vector with names to apply to the qwindows.
 #' @param overwrite Logical indicating whether to overwrite previously-derived output.
-#' @param GGIR_outputdir 
+#' @param GGIR_outputdir Path to folder where the GGIR output is stored.
 #' @param verbose Logical indicating whether to print progress messages in the console.
 #'
 #' @return aggregated data frame.
