@@ -16,6 +16,11 @@
 #' @export
 #' 
 fix_window_number = function(WS, ggir_output, ts = NULL) {
+  # internal function: last observation carried forward
+  locf <- function(x) {
+    v <- !is.na(x) & x != ""
+    c(NA, x[v])[cumsum(v) + 1]
+  }
   # if there is no GGIR or GGIRmatcher output, then only dummy output
   if (is.null(ggir_output) | is.null(WS)) {
     if (is.null(ggir_output)) {
@@ -81,6 +86,12 @@ fix_window_number = function(WS, ggir_output, ts = NULL) {
     WS$window_number = as.numeric(WS$window_number)
     ggir_output$ggir_available = TRUE
     ggir_output$window_number = as.numeric(ggir_output$window_number)
+    # in the case of missing segments, standardize variables of processing
+    vars = c("ID", "filename", "sleepparam", 
+             "boutcriter.in", "boutcriter.lig", "boutcriter.mvpa",
+             "boutdur.in", "boutdur.lig", "boutdur.mvpa",
+             "TRLi", "TRMi", "TRVi", "GGIRversion")
+    ggir_output[, vars] = apply(ggir_output[, vars], 2, locf)
     # FIX WINDOW NUMBERS
     for (window_type in c("MM", "WW", "OO", "Segments")) {
       if (window_type == "Segments") {
@@ -112,19 +123,7 @@ fix_window_number = function(WS, ggir_output, ts = NULL) {
             colnames(m2add) = colnames(ggir_output)
             m2add = as.data.frame(m2add)
             # fill up values needed for merging
-            m2add$ID = unique(ggir_output$ID)
-            m2add$filename = unique(ggir_output$filename)
-            m2add$sleepparam = unique(ggir_output$sleepparam)
-            m2add$boutcriter.in = unique(ggir_output$boutcriter.in)
-            m2add$boutcriter.lig = unique(ggir_output$boutcriter.lig)
-            m2add$boutcriter.mvpa = unique(ggir_output$boutcriter.mvpa)
-            m2add$boutdur.in = unique(ggir_output$boutdur.in)
-            m2add$boutdur.lig = unique(ggir_output$boutdur.lig)
-            m2add$boutdur.mvpa = unique(ggir_output$boutdur.mvpa)
-            m2add$TRLi = unique(ggir_output$TRLi)
-            m2add$TRMi = unique(ggir_output$TRMi)
-            m2add$TRVi = unique(ggir_output$TRVi)
-            m2add$GGIRversion = unique(ggir_output$GGIRversion)
+            m2add[, c(vars)] = ggir_output[1:length(ggirmissing), vars]
             m2add$calendar_date = WS$start_date[seladd][ggirmissing]
             m2add$weekday = weekdays(as.Date(m2add$calendar_date), FALSE)
             m2add$window_number = WS$window_number[seladd][ggirmissing]
@@ -191,34 +190,22 @@ fix_window_number = function(WS, ggir_output, ts = NULL) {
           for (seli in seladd) {
             WS$window_number[seli] = names(dates)[which(dates == WS$start_date[seli])]
           }
+          # fill potential missing parameters in GGIR output
+          vars = c("ID", "filename", "sleepparam", 
+                   "boutcriter.in", "boutcriter.lig", "boutcriter.mvpa",
+                   "boutdur.in", "boutdur.lig", "boutdur.mvpa",
+                   "TRLi", "TRMi", "TRVi", "GGIRversion")
+          ggir_output[, vars] = apply(ggir_output[, vars], 2, locf)
           # fill up missing windows in GGIR output
           windowsggir = paste(ggir_output$window_number[selggir], ggir_output$window[selggir])
           windowsadd = paste(WS$window_number[seladd], WS$window[seladd])
           ggirmissing = which(!windowsadd %in% windowsggir)
           if (length(ggirmissing) > 0) {
             m2add = matrix(NA, nrow = length(ggirmissing), ncol = ncol(ggir_output))
-            m2add = as.data.frame(m2add)
             colnames(m2add) = colnames(ggir_output)
+            m2add = as.data.frame(m2add)
             # fill up values needed for merging
-            m2add$ID = unique(ggir_output$ID)
-            m2add$filename = unique(ggir_output$filename)
-            m2add$calendar_date = WS$start_date[seladd][ggirmissing]
-            m2add$weekday = weekdays(as.Date(m2add$calendar_date), FALSE)
-            m2add$window_number = WS$window_number[seladd][ggirmissing]
-            m2add$window = WS$window[seladd][ggirmissing]
-            m2add$start_end_window = paste(WS$start_time[seladd][ggirmissing],
-                                           WS$end_time[seladd][ggirmissing], sep = "-")
-            m2add$sleepparam = unique(ggir_output$sleepparam)
-            m2add$boutcriter.in = unique(ggir_output$boutcriter.in)
-            m2add$boutcriter.lig = unique(ggir_output$boutcriter.lig)
-            m2add$boutcriter.mvpa = unique(ggir_output$boutcriter.mvpa)
-            m2add$boutdur.in = unique(ggir_output$boutdur.in)
-            m2add$boutdur.lig = unique(ggir_output$boutdur.lig)
-            m2add$boutdur.mvpa = unique(ggir_output$boutdur.mvpa)
-            m2add$TRLi = unique(ggir_output$TRLi)
-            m2add$TRMi = unique(ggir_output$TRMi)
-            m2add$TRVi = unique(ggir_output$TRVi)
-            m2add$GGIRversion = unique(ggir_output$GGIRversion)
+            m2add[, c(vars)] = ggir_output[1:length(ggirmissing), vars]
             m2add$ggir_available = FALSE
             ggir_output = rbind(ggir_output, m2add)
           }
