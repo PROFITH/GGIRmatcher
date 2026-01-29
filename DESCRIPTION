@@ -12,7 +12,7 @@ Maintainer: Jairo H Migueles <jairo@jhmigueles.com>
 Description: GGIRmatcher aims to match time series GGIR part 5 output with time series extracted from an additional sensor.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: methods, stats, R (>= 3.5)
 Imports: 
     GGIR,
