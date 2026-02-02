@@ -30,7 +30,8 @@ analyseSegment = function(ts, id, splits, FUNs,
   addmetrici = which(!colnames(ts) %in% c("timestamp","timenum","additional_available",
                                           "ACC","SleepPeriodTime","invalidepoch","guider",             
                                           "window","angle","class_id","invalid_fullwindow",  
-                                          "invalid_sleepperiod","invalid_wakinghours","ggir_available"))
+                                          "invalid_sleepperiod","invalid_wakinghours","ggir_available",
+                                          "sibdetection"))
   an = colnames(ts)[addmetrici]
   # if all additional sensor is na, meaning no additional sensor info is available
   # return NULL
@@ -93,6 +94,16 @@ analyseSegment = function(ts, id, splits, FUNs,
     ws = merge(ws, M, by = "window_number", all.x = T)
     # ws = ws[order(as.numeric(ws[, "window_number"])), ]
     return(ws)
+  }
+  # Handle case where no splits are found (e.g., recording < 24h for MM)
+  if (length(splits) == 0) {
+    if (window_type %in% c("MM", "segments")) {
+      # Treat the whole recording as one single segment
+      splits = c(nrow(ts) + 1)
+    } else {
+      # For WW/OO, if no wake-up or onset is found, we can't define a window
+      return(NULL)
+    }
   }
   # identify epoch
   e0 = strptime(ts$timestamp[1], "%Y-%m-%dT%H:%M:%S%z")
