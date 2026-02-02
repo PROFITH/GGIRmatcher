@@ -26,12 +26,6 @@ aggregate_per_window = function(GGIRmatcher_outputdir, GGIR_outputdir,
                                 overwrite = FALSE, 
                                 tz = Sys.timezone(),
                                 verbose = TRUE) {
-  # redefine directories to facilitate access to files of interest
-  GGIR_outputdir = grep("output_", dir(GGIR_outputdir, full.names = T), value = T)
-  if (length(GGIR_outputdir) != 1) {
-    stop(paste0("Your GGIR_outputdir does not contain one single folder for the",
-                " GGIR output. Handling of multiple outputs from GGIR is not supported."))
-  }
   # safe checks in function object
   if (is.null(names(FUNs))) stop("Please provide names to the functions in the FUNs parameter list")
   # include function to count number of recordings in window
@@ -44,12 +38,13 @@ aggregate_per_window = function(GGIRmatcher_outputdir, GGIR_outputdir,
   ggir_files = dir(file.path(GGIR_outputdir, "meta", "ms5.out"), full.names = T)
   output = NULL
   for (fi in 1:length(files)) {
-    id = ts = cutpoints = legend = ggir_available = additional_available = NULL
-    load(files[fi])
+    ts = cutpoints = legend = ggir_available = additional_available = NULL
+    # overwrite?
+    id = gsub(".RData$", "", basename(files[fi]))
     fn2save = file.path(dir2save, paste0(id, ".RData"))
     if (file.exists(fn2save) & overwrite == FALSE) next
     if (verbose) cat(paste0(fi, "-", id, " "))
-    if (is.null(id)) id = gsub(".RData$", "", basename(files[fi]))
+    load(files[fi])
     # get indices for window definitions
     time = strptime(ts$timestamp, tz = tz, format = "%Y-%m-%dT%H:%M:%S%z")
     H = as.numeric(format(time, "%H"))
@@ -93,6 +88,7 @@ aggregate_per_window = function(GGIRmatcher_outputdir, GGIR_outputdir,
       ggir_fi = grep(id, ggir_files, value = T)
       output = NULL
       load(ggir_fi)
+      output$ID = gsub(".gt3x$", "", output$ID)
     } else {
       output = NULL
     }
